@@ -12,6 +12,8 @@ BOT_NAME = 'REI'
 
 SPIDER_MODULES = ['REI.spiders']
 NEWSPIDER_MODULE = 'REI.spiders'
+DOWNLOAD_DELAY = 0.5
+#COOKIES_ENABLED = 0
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'REI (+http://www.yourdomain.com)'

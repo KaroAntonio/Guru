@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import scrapy
 import time
 import re
@@ -10,7 +9,7 @@ class ZillowSpiderSpider(CrawlSpider):
     name = "zillow"
     allowed_domains = ["zillow.com"]
     visited = True
-    start_urls = ( 'http://www.zillow.com/homes/for_sale/AZ/fsba,fsbo,new_lt/house,condo,apartment_duplex,townhouse_type/8_rid/days_sort/33.650172,-112.067113,33.599071,-112.157235_rect/13_zm/0_mmm/',
+    start_urls = ( 'http://www.zillow.com/homes/for_sale/AZ/fsba,fsbo,new_lt/house,condo,apartment_duplex,townhouse_type/8_rid/days_sort/33.641705,-112.112067,33.616156,-112.157128_rect/14_zm/0_mmm/',
     )
     
     rules = (
