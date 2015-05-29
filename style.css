@@ -1,0 +1,84 @@
+body {
+    overflow: hidden;
+    font-family: sans-serif;
+}
+
+.title {
+    text-align: left;
+    font-size: 20px;
+}
+
+.tableTitle {
+    font-size: 25px;
+    display: inline;
+}
+
+#tomorrowDate, #todayDate {
+    font-size: 20px;
+    color: grey;
+    margin-left: 10px;
+    display: inline;
+}
+
+#propertiesTable {
+    display: inline-block;
+    margin-left: 1%;
+    text-align: center;
+    
+}
+
+.table-static-header td {
+    width: 33%;
+}
+
+.table-wrapper {
+    margin: 20px auto 40px auto;
+    height: 350px;
+}
+
+.table-rows-table-wrapper{
+    height: inherit;
+    background: #eeeeee;
+	overflow-y: scroll;
+}
+
+.table-static-header, #table-rows-table{
+    table-layout: fixed;
+    width: 100%; 
+    border-collapse:collapse; 
+}
+.table-static-header-row td{ 
+    padding:7px; 
+    text-align: left;
+    background: #666666;
+    color: #ffffff;
+}
+
+#table-rows-table td{
+    padding:7px; 
+    width: inherit;
+    text-align: left;
+    
+}
+/* Define the default color for all the table rows */
+#table-rows-table tr{
+	text-align: left;
+    background: #eeeeee;
+}
+/* Define the hover highlight color for the table row */ 
+#table-rows-table tbody tr:hover {
+      background: #dddddd;
+}
+
+.selected {
+    background-color: #FBBC2E !important;
+}
+
+#table-rows-table td, .table-static-header td{
+    width: 200px;
+}
+
+.highlight {
+    background: #ffffff;
+    
+}

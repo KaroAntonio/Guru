@@ -1,0 +1,161 @@
+<!doctype html>
+<meta charset="utf-8">
+<html>
+<head>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="/pico/client.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="style.css">
+<title>REI Guru</title>
+</head>
+<body>
+<div class="title">REI Guru</div>
+<div id="message"></div>
+<div id="propertiesTable">
+	<div class="tableTitle">Investment Properties</div>
+    <div id="todayDate"> Ranked </div>
+    <div class="Search Preferences">
+    <form>
+    Minimum Price: 
+    <input id="min_price" type="text" name="min_price">
+    <br>
+    Maximum Price: 
+    <input id="max_price" type="text" name="max_price">
+    <br>
+    <input type="button" value="Update" id="update_button" onclick="updateTables()"/>
+    </form>
+    </div>
+     	
+     	     <div class="table-wrapper">
+                <table class="table-static-header">
+                    <thead>
+                        <tr class="table-static-header-row">
+                        </tr>
+                    </thead>
+                </table>
+                <div class="table-rows-table-wrapper">
+                    <table id="table-rows-table">
+                        <tbody>	</tbody>
+                    </table>
+                </div>
+            </div>
+     </div>
+</body>
+</html>
+
+<script>  
+pico.load('example');
+        pico.main = function() {
+            var displayMessage = function(message){
+               document.getElementById('message').innerHTML = message;
+           }
+           example.hello(displayMessage);
+        }
+/*
+pico.load('crawl');
+    
+pico.main = function() {
+            console.log(crawl.hello())
+        }
+    
+console.log(crawl.hello())*/
+    
+var properties_data;
+var properties;
+var selected;
+
+//Import Json
+function importPropertyData() {
+    
+}
+d3.json("houses.json", function (data) {
+
+properties_data = data;
+
+document.getElementById('min_price').value = 100000;
+document.getElementById('max_price').value = 1000000;
+    
+//Set the headers for both tables
+$('.table-static-header-row')
+    .append($('<td></td>').text('Address'))
+    .append($('<td></td>').text('City'))
+    .append($('<td></td>').text('Estimated Rent'))
+    .append($('<td></td>').text('Sale Price'))
+    .append($('<td></td>').text('Sale Status'));
+    
+
+//Add Rows to table  
+updateTables();     
+})
+        
+function updateTables() {
+    //Filter and Sort properties
+    var min_price = Number(document.getElementById('min_price').value);
+    var max_price = Number(document.getElementById('max_price').value);
+    console.log("Update Tables " + max_price + " " + min_price)
+    if (properties != null) {
+        properties = properties_data.filter(function (el) {
+          return el.price >= min_price &&
+                    el.price <= max_price;
+        });
+
+        properties.sort(function(a, b){
+            return (a.price/a.rent_zestimate)-(b.price/b.rent_zestimate)
+        });
+    }
+    populateTables();
+}   
+
+function populateTables() {
+    $("#table-rows-table tr").remove();
+    
+    if (properties != null) {
+        properties.forEach(function(d) {
+            addRow("table-rows-table", d)
+        })
+    }
+    
+}
+    
+function addRow(tableID, b) {
+    var table = document.getElementById(tableID);
+    var rowCount = table.rows.length;
+    var row = table.insertRow(rowCount);
+    if (b == null)
+        row.insertCell(0).innerHTML= "Nothing to Receive";
+    else {
+        row.insertCell(0).innerHTML= b.address;
+        row.insertCell(1).innerHTML= b.city;
+        row.insertCell(2).innerHTML= b.rent_zestimate;
+        row.insertCell(3).innerHTML= b.price;
+        row.insertCell(4).innerHTML= b.sale_status;
+        
+    }
+    row.className += " row";
+    
+    //Make row selectable
+    row.onclick = function() {
+            if (selected != null)
+                selected.classList.toggle('selected');
+            selected = this;
+            selected.classList.toggle('selected');
+            window.open(b.zillow_url);
+            /*
+            if (b != null) {
+                document.getElementsByName("id")[0].value = b.bookingID;
+                document.getElementsByName("shipped")[0].value = 1;
+                document.getElementsByName("received")[0].value = 1;
+                document.getElementsByName("kitID")[0].value = b.kitID;
+                document.getElementsByName("destination")[0].value = b.destination;
+            } else {
+                document.getElementsByName("id")[0].value = "";
+                document.getElementsByName("shipped")[0].value = "";
+                document.getElementsByName("received")[0].value = "";
+                document.getElementsByName("kitID")[0].value = "";
+                document.getElementsByName("destination")[0].value = "";
+            }
+            */
+        }
+}
+   
+</script>
