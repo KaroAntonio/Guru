@@ -8,17 +8,18 @@
 <link rel="stylesheet" type="text/css" href="style.css">
 <script type="text/javascript">
     
-loadData();
-    
 var properties_data,
     properties,
     selected,
-    init = false;
+    init = false,
+    loaded = false;
 
 importJson();  
     
 //Import Json
 function importJson() {
+    console.log("Import")
+    
     d3.json("houses.json", function (data) {
         properties = data;
         
@@ -35,12 +36,12 @@ function importJson() {
                 .append($('<td></td>').text('Sale Status'));
         }
         
-        //Add Rows to table  
-        updateTables();     
+        updateTables()
     })
 }
     
 function updateTables() {
+    
     //Filter and Sort properties
     var min_price = Number(document.getElementById('min_price').value);
     var max_price = Number(document.getElementById('max_price').value);
@@ -68,17 +69,45 @@ function populateTables() {
     }
     
 }
-    
+
 function loadData() {
-    pico.load('crawl');
-    pico.main = function() {
-        //console.log(crawl.run());
-        console.log(crawl.hello());
+    if (!loaded) {
+        loaded = true;
+        pico.load('crawl');
+        //After first Click, button is renamed
+        document.getElementById("import_button").value = "Load Data";
+        pico.main = function() {
+            console.log(crawl.run());
+            //console.log(crawl.timetest());
+            //console.log(crawl.hello());
+        }
+    } else { 
+        //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse
+        var test = Date.parse(properties[0].timestamp);
+        pico.main()
+        console.log(test)
+        testData ()
+        document.getElementById("import_button").value = "Loading...";
+        document.getElementById("import_button").disabled = true;
+        
+        //Recursively Test if Data has finished loading
+        function testData () {
+            importJson()
+            
+            if (test >= Date.parse(properties[0].timestamp)) {
+                console.log("Loading...")
+                setTimeout(testData, 2000);
+            } else {
+                console.log("Finished Loading!")
+                document.getElementById("import_button").value = "Load Data";
+                document.getElementById("import_button").disabled = false;
+            }
+        }
     }
+    
+    
 }
 
-function getData() { pico.main() }
-    
 function addRow(tableID, b) {
     var table = document.getElementById(tableID);
     var rowCount = table.rows.length;
@@ -123,8 +152,9 @@ function addRow(tableID, b) {
     Maximum Price: 
     <input id="max_price" type="text" name="max_price">
     <br>
-    <input type="button" value="Import Data" id="update_button" onclick="importJson()"/>
-    <input type="button" value="Get Property Data" id="update_button" onclick="getData()"/>
+    <input type="button" value="Prime Data Loader" id="import_button" onclick="loadData()"/>
+    <input type="button" value="Update Properties" id="import_button" onclick="importJson()"/>
+    
     </form>
     </div>
      	

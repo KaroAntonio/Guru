@@ -21,5 +21,5 @@ class HouseItem(scrapy.Item):
     bathrooms = scrapy.Field()
     sqrft = scrapy.Field()
     lot_size = scrapy.Field()
-    date_scraped = scrapy.Field()
+    timestamp = scrapy.Field()
     zillow_url = scrapy.Field()

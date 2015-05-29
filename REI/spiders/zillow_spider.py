@@ -1,6 +1,8 @@
 import scrapy
 import time
+import datetime
 import re
+from random import randint
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
 from REI.items import HouseItem
@@ -9,7 +11,7 @@ class ZillowSpiderSpider(CrawlSpider):
     name = "zillow"
     allowed_domains = ["zillow.com"]
     visited = True
-    start_urls = ( 'http://www.zillow.com/homes/for_sale/AZ/fsba,fsbo,new_lt/house,condo,apartment_duplex,townhouse_type/8_rid/days_sort/33.641705,-112.112067,33.616156,-112.157128_rect/14_zm/0_mmm/',
+    start_urls = ( 'http://www.zillow.com/homes/for_sale/AZ/fsba,fsbo,new_lt/house,condo,apartment_duplex,townhouse_type/8_rid/days_sort/33.643688,-112.216523,33.61814,-112.261584_rect/14_zm/0_mmm/',
     )
     
     rules = (
@@ -24,6 +26,8 @@ class ZillowSpiderSpider(CrawlSpider):
     )
     
     def parse_house(self,response):
+        #wait a random amount of time to disguise spider
+        time.sleep(randint(0,300)/100)
         
         house = HouseItem()
         house['zillow_url'] = response.url
@@ -39,5 +43,6 @@ class ZillowSpiderSpider(CrawlSpider):
         house['sqrft'] = re.search( r'^(.*?)\s', response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " addr_bbs ")][3]/text()').extract()[0] ).group(1).replace(r',', "")
         house['lot_size'] = re.search( r'\s(.*?)$', response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " zsg-list_square ")]/li[1]/text()').extract()[0] ).group(1).replace(r',', "")
         house['zpid'] = re.search(r'/(\d*)_zpid', response.url).group(1)
-        house['date_scraped'] = time.strftime("%d/%m/%Y")
+        #https://docs.python.org/2/library/datetime.html
+        house['timestamp'] = datetime.datetime.now().isoformat()
         yield house

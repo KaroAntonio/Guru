@@ -8,11 +8,12 @@
 #     http://doc.scrapy.org/en/latest/topics/settings.html
 #
 
+
 BOT_NAME = 'REI'
 
 SPIDER_MODULES = ['REI.spiders']
 NEWSPIDER_MODULE = 'REI.spiders'
-DOWNLOAD_DELAY = 0.5
+DOWNLOAD_DELAY = 0.0
 #COOKIES_ENABLED = 0
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
