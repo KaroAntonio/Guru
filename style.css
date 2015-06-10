@@ -13,7 +13,7 @@ body {
     display: inline;
 }
 
-#tomorrowDate, #todayDate {
+#table_info {
     font-size: 20px;
     color: grey;
     margin-left: 10px;

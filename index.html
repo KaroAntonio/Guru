@@ -25,6 +25,7 @@ function importJson() {
         
         if (!init) {
             init = true;
+            document.getElementById('url_input').value = "http://www.zillow.com/homes/for_sale/AZ/fsba,fsbo,new_lt/house,condo,apartment_duplex,townhouse_type/8_rid/days_sort/33.596802,-112.279994,33.571239,-112.325056_rect/14_zm/0_mmm/";
             document.getElementById('min_price').value = 100000;
             document.getElementById('max_price').value = 1000000;
             //Set the headers for both tables
@@ -33,9 +34,10 @@ function importJson() {
                 .append($('<td></td>').text('City'))
                 .append($('<td></td>').text('Estimated Rent'))
                 .append($('<td></td>').text('Sale Price'))
+                .append($('<td></td>').text('Bedrooms'))
+                .append($('<td></td>').text('Lot Size'))
                 .append($('<td></td>').text('Sale Status'));
         }
-        
         updateTables()
     })
 }
@@ -56,6 +58,10 @@ function updateTables() {
             return (a.price/a.rent_zestimate)-(b.price/b.rent_zestimate)
         });
     }
+    
+    if (properties != null)
+            document.getElementById('table_info').innerHTML = "Ranked:" + properties.length
+            
     populateTables();
 }   
 
@@ -77,32 +83,35 @@ function loadData() {
         //After first Click, button is renamed
         document.getElementById("import_button").value = "Load Data";
         pico.main = function() {
-            console.log(crawl.run());
-            //console.log(crawl.timetest());
-            //console.log(crawl.hello());
+            var url = document.getElementById("url_input").value
+            console.log(crawl.run(url));
         }
     } else { 
         //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse
-        var test = Date.parse(properties[0].timestamp);
+        var test
+        if (properties != null)
+             test = Date.parse(properties[0].timestamp);
+        else test = 0
         pico.main()
-        console.log(test)
-        testData ()
+        testData()
         document.getElementById("import_button").value = "Loading...";
         document.getElementById("import_button").disabled = true;
-        
+
         //Recursively Test if Data has finished loading
         function testData () {
             importJson()
-            
-            if (test >= Date.parse(properties[0].timestamp)) {
-                console.log("Loading...")
-                setTimeout(testData, 2000);
-            } else {
-                console.log("Finished Loading!")
-                document.getElementById("import_button").value = "Load Data";
-                document.getElementById("import_button").disabled = false;
+            if (properties != null) {
+                if (test >= Date.parse(properties[0].timestamp)) {
+                    console.log("Loading...")
+                    setTimeout(testData, 2000);
+                } else {
+                    console.log("Finished Loading!")
+                    document.getElementById("import_button").value = "Load Data";
+                    document.getElementById("import_button").disabled = false;
+                }
             }
         }
+        
     }
     
     
@@ -119,7 +128,9 @@ function addRow(tableID, b) {
         row.insertCell(1).innerHTML= b.city;
         row.insertCell(2).innerHTML= b.rent_zestimate;
         row.insertCell(3).innerHTML= b.price;
-        row.insertCell(4).innerHTML= b.sale_status;
+        row.insertCell(4).innerHTML= b.bedrooms;
+        row.insertCell(5).innerHTML= b.lot_size;
+        row.insertCell(6).innerHTML= b.sale_status;
         
     }
     row.className += " row";
@@ -143,9 +154,12 @@ function addRow(tableID, b) {
 <div id="message"></div>
 <div id="propertiesTable">
 	<div class="tableTitle">Investment Properties</div>
-    <div id="todayDate"> Ranked </div>
+    <div id="table_info"> Ranked </div>
     <div class="Search Preferences">
     <form>
+    Input URL: 
+    <input id="url_input" type="text" name="url_input">
+    <br>
     Minimum Price: 
     <input id="min_price" type="text" name="min_price">
     <br>
