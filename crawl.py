@@ -6,13 +6,6 @@ import math
 def hello(name="Name"):
     return "Hello " + name
 
-def restart_polipo():
-    subprocess.call('killall polipo', shell=True);
-    subprocess.call('polipo', shell=True);
-    
-def refresh_polipo():
-    subprocess.call('killall -SIGUSR2 polipo', shell=True);
-
 def run(url):
     subprocess.call('rm houses.json', shell=True);
     subprocess.call('scrapy crawl zillow -a url='+url+' -o houses.json', shell=True);

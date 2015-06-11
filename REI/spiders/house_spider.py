@@ -69,7 +69,7 @@ class HouseSpiderSpider(scrapy.Spider):
             house['lot_size'] = lot_field
         else:
             house['lot_size'] = re.search( r'\s(.*?)$', lot_field ).group(1).replace(r',', "")
-        house['zpid'] = re.search(r'/(\d*)_zpid', response.url).group(1)
+        house['id'] = re.search(r'/(\d*)_zpid', response.url).group(1)
         #https://docs.python.org/2/library/datetime.html
         house['timestamp'] = datetime.datetime.now().isoformat()
         

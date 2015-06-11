@@ -20,6 +20,10 @@ FEED_EXPORTERS = {
         'sqlite': 'scripts.exporters.SqliteItemExporter',
     }
 
+ITEM_PIPELINES = {
+    'REI.pipelines.SQLPipeline': 300,
+}
+
 ### More comprehensive list can be found at 
 ### http://techpatterns.com/forums/about304.html
 USER_AGENT_LIST = [

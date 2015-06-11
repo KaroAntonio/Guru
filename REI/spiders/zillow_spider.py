@@ -2,6 +2,7 @@ import scrapy
 import time
 import datetime
 import re
+import json
 from scraper import get_ajax_url
 from scraper import get_price_history
 from bs4 import BeautifulSoup
@@ -95,7 +96,7 @@ class ZillowSpiderSpider(CrawlSpider):
             house['lot_size'] = lot_field
         else:
             house['lot_size'] = re.search( r'\s(.*?)$', lot_field ).group(1).replace(r',', "")
-        house['zpid'] = re.search(r'/(\d*)_zpid', response.url).group(1)
+        house['id'] = re.search(r'/(\d*)_zpid', response.url).group(1)
         #https://docs.python.org/2/library/datetime.html
         house['timestamp'] = datetime.datetime.now().isoformat()
         
@@ -115,7 +116,7 @@ class ZillowSpiderSpider(CrawlSpider):
         #Parse Price History Table
         house = response.meta['item']
         tax_url = house['tax_url']
-        house['price_history'] = []
+        price_history = []
         pattern = r' { "html": "(.*)" }'
         html = re.search(pattern, response.body).group(1)
         html = re.sub(r'\\"', r'"', html)  # Correct escaped quotes
@@ -133,7 +134,9 @@ class ZillowSpiderSpider(CrawlSpider):
                     date = cols[0].get_text()
                     event = cols[1].get_text()
                     price = cols[2].find('span').get_text()
-                    house['price_history'].append([date, event, price])
+                    price_history.append([date, event, price])
+            #Store history as JSON string    
+            house['price_history'] = json.dumps(price_history)
         tax_request = Request(tax_url, 
                           callback=self.parse_taxes)
         tax_request.meta['item'] = house
@@ -143,7 +146,7 @@ class ZillowSpiderSpider(CrawlSpider):
     def parse_taxes(self,response):
         #Parse Tax History Table
         house = response.meta['item']
-        house['tax_history'] = []
+        tax_history = []
         pattern = r' { "html": "(.*)" }'
         html = re.search(pattern, response.body).group(1)
         html = re.sub(r'\\"', r'"', html)  # Correct escaped quotes
@@ -160,8 +163,9 @@ class ZillowSpiderSpider(CrawlSpider):
                     date = cols[0].get_text()
                     tax = cols[1].contents[0]
                     assessment = cols[3].get_text()
-                    house['tax_history'].append([date, tax, assessment])
+                    tax_history.append([date, tax, assessment])
                 except:
-                    house['tax_history'].append([Error])
-        
+                    tax_history.append([Error])
+            house['tax_history'] = json.dumps(tax_history)
+            
         yield house

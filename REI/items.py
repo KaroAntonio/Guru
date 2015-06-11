@@ -8,7 +8,7 @@
 import scrapy
 
 class HouseItem(scrapy.Item):
-    zpid = scrapy.Field()
+    id = scrapy.Field()
     address = scrapy.Field()
     city = scrapy.Field()
     state = scrapy.Field()
