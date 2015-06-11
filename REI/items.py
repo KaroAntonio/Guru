@@ -23,3 +23,7 @@ class HouseItem(scrapy.Item):
     lot_size = scrapy.Field()
     timestamp = scrapy.Field()
     zillow_url = scrapy.Field()
+    price_history = scrapy.Field()
+    tax_history = scrapy.Field()
+    tax_url = scrapy.Field()
+    sqlite_keys = []

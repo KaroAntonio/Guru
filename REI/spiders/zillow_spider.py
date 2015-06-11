@@ -2,10 +2,12 @@ import scrapy
 import time
 import datetime
 import re
+from scraper import get_ajax_url
+from scraper import get_price_history
+from bs4 import BeautifulSoup
 from crawl import gen_urls
-from crawl import restart_polipo
-from crawl import refresh_polipo
 from random import randint
+from scrapy.http.request import Request
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
 from REI.items import HouseItem
@@ -74,7 +76,12 @@ class ZillowSpiderSpider(CrawlSpider):
         stripped_line = house['sale_status'].strip()
         if (stripped_line == ""):
             house['sale_status'] = response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " status-icon-row ")]/span/text()').extract()[0]
-        house['rent_zestimate'] = re.search( r'^(.*?)/', response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " zest-value ")]/text()').extract()[1] ).group(1).replace(r',', "").replace(r'$', "")
+        zestimate_field = response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " zest-value ")]/text()').extract()[1]
+        if (zestimate_field != 'Unavailable'):
+            house['rent_zestimate'] = re.search( r'^(.*?)/', zestimate_field ).group(1).replace(r',', "").replace(r'$', "")
+        else:
+            house['rent_zestimate'] = -1;
+            
         bedroom_field = re.search( r'^(.*?)\s', response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " addr_bbs ")]/text()').extract()[0] )
         if (bedroom_field != None): 
             house['bedrooms'] = bedroom_field.group(1)
@@ -91,7 +98,70 @@ class ZillowSpiderSpider(CrawlSpider):
         house['zpid'] = re.search(r'/(\d*)_zpid', response.url).group(1)
         #https://docs.python.org/2/library/datetime.html
         house['timestamp'] = datetime.datetime.now().isoformat()
-        yield house
         
-    
-            
+        #Request Histories
+        soup = BeautifulSoup(response.body)
+        history_url = get_ajax_url(soup, "z-hdp-price-history")
+        tax_url = get_ajax_url(soup, "z-expando-table")
+        history_request = Request(history_url, 
+                          callback=self.parse_history)
+        history_request.meta['item'] = house
+        history_request.meta['tax_url'] = tax_url
+        house['tax_url'] = tax_url
+        
+        return history_request
+        
+    def parse_history(self,response):
+        #Parse Price History Table
+        house = response.meta['item']
+        tax_url = house['tax_url']
+        house['price_history'] = []
+        pattern = r' { "html": "(.*)" }'
+        html = re.search(pattern, response.body).group(1)
+        html = re.sub(r'\\"', r'"', html)  # Correct escaped quotes
+        html = re.sub(r'\\/', r'/', html)  # Correct escaped forward
+        if (html != ""):
+            soup = BeautifulSoup(html)
+            table = soup.find('table')
+            table_body = table.find('tbody')
+            rows = table_body.find_all('tr')
+            for row in rows:
+                cols = row.find_all('td')
+                cols = [ele for ele in cols]
+                cols = cols[:3]
+                if (cols[2].find('span') != None):
+                    date = cols[0].get_text()
+                    event = cols[1].get_text()
+                    price = cols[2].find('span').get_text()
+                    house['price_history'].append([date, event, price])
+        tax_request = Request(tax_url, 
+                          callback=self.parse_taxes)
+        tax_request.meta['item'] = house
+        
+        return tax_request
+        
+    def parse_taxes(self,response):
+        #Parse Tax History Table
+        house = response.meta['item']
+        house['tax_history'] = []
+        pattern = r' { "html": "(.*)" }'
+        html = re.search(pattern, response.body).group(1)
+        html = re.sub(r'\\"', r'"', html)  # Correct escaped quotes
+        html = re.sub(r'\\/', r'/', html)  # Correct escaped forward
+        if (html != "") :
+            soup = BeautifulSoup(html)
+            table = soup.find('table')
+            table_body = table.find('tbody')
+            rows = table_body.find_all('tr')
+            for row in rows:
+                try:
+                    cols = row.find_all('td')
+                    cols = [ele for ele in cols]
+                    date = cols[0].get_text()
+                    tax = cols[1].contents[0]
+                    assessment = cols[3].get_text()
+                    house['tax_history'].append([date, tax, assessment])
+                except:
+                    house['tax_history'].append([Error])
+        
+        yield house

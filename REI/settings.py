@@ -8,15 +8,17 @@
 #     http://doc.scrapy.org/en/latest/topics/settings.html
 #
 
-
 BOT_NAME = 'REI'
-
 SPIDER_MODULES = ['REI.spiders']
 NEWSPIDER_MODULE = 'REI.spiders'
 DOWNLOAD_DELAY = 0.0
 COOKIES_ENABLED = False
 CONCURRENT_REQUESTS = 1000
 CONCURRENT_REQUESTS_PER_DOMAIN = 1000
+
+FEED_EXPORTERS = {
+        'sqlite': 'scripts.exporters.SqliteItemExporter',
+    }
 
 ### More comprehensive list can be found at 
 ### http://techpatterns.com/forums/about304.html
@@ -42,7 +44,7 @@ PROXIES = [
     {'ip_port': '173.234.165.175:8800', 'user_pass': ''},#G
     {'ip_port': '50.31.10.106:8800', 'user_pass': ''},#G
         ]
-           
+
 
 #Random Internet Proxy
 #PROXIES = [{'ip_port': '205.144.165.253:8080', 'user_pass': ''},]

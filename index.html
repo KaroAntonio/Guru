@@ -35,7 +35,6 @@ function importJson() {
                 .append($('<td></td>').text('Estimated Rent'))
                 .append($('<td></td>').text('Sale Price'))
                 .append($('<td></td>').text('Bedrooms'))
-                .append($('<td></td>').text('Lot Size'))
                 .append($('<td></td>').text('Sale Status'));
         }
         updateTables()
@@ -129,8 +128,7 @@ function addRow(tableID, b) {
         row.insertCell(2).innerHTML= b.rent_zestimate;
         row.insertCell(3).innerHTML= b.price;
         row.insertCell(4).innerHTML= b.bedrooms;
-        row.insertCell(5).innerHTML= b.lot_size;
-        row.insertCell(6).innerHTML= b.sale_status;
+        row.insertCell(5).innerHTML= b.sale_status;
         
     }
     row.className += " row";

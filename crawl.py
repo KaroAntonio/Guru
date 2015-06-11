@@ -74,5 +74,9 @@ def gen_urls(url):
             
             #print(i, j, newlat1, newlat2, newlong1, newlong2)
             #print (i, j, newurl)
+            
+    print(len(urls))
     
     return urls
+
+
