@@ -20,6 +20,7 @@ class ZillowSpiderSpider(CrawlSpider):
     requests = 0
     max_interval = 10
     request_interval = 10
+    pauseEnabled = False;
     
     start_urls = ( 'http://www.zillow.com/homes/for_sale/AZ/fsba,fsbo,new_lt/house,condo,apartment_duplex,townhouse_type/8_rid/days_sort/33.643688,-112.216523,33.61814,-112.261584_rect/14_zm/0_mmm/',
     )
@@ -33,17 +34,20 @@ class ZillowSpiderSpider(CrawlSpider):
 
         # Extract links matching 'homedetails' and parse them with the spider's method parse_house
         Rule(LinkExtractor(allow=('/homedetails/', )), callback='parse_house'),
-        Rule(LinkExtractor(allow=('community/', )), callback='parse_house'),
+        Rule(LinkExtractor(allow=('/community/', )), callback='parse_house'),
     )
     
-    def __init__(self, url=None, *args, **kwargs):
+    def __init__(self, url=None, prll=False, *args, **kwargs):
         super(ZillowSpiderSpider, self).__init__(*args, **kwargs)
-        self.start_urls = gen_urls(url)
+        if (prll):
+            self.start_urls = [ url ]
+        else:
+            self.start_urls = gen_urls(url)
         
     def link_callback(self,response):
         #somehow couldnt remove this to another function
         self.requests += 1
-        if (self.requests % self.request_interval == 0):
+        if (self.pauseEnabled & (self.requests % self.request_interval == 0)):
             print("Pause")
             self.request_interval = randint(0,self.max_interval)
             pause_time = randint(0,200)/100
@@ -54,7 +58,7 @@ class ZillowSpiderSpider(CrawlSpider):
         #wait a random amount of time to disguise spider
         #time.sleep(randint(0,50)/100)
         self.requests += 1
-        if (self.requests % self.request_interval == 0):
+        if (self.pauseEnabled & (self.requests % self.request_interval == 0)):
             print("Pause")
             self.request_interval = randint(1,self.max_interval)
             pause_time = randint(0,200)/100

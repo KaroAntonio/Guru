@@ -26,4 +26,5 @@ class HouseItem(scrapy.Item):
     price_history = scrapy.Field()
     tax_history = scrapy.Field()
     tax_url = scrapy.Field()
+    features = scrapy.Field()
     sqlite_keys = []

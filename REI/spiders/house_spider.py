@@ -17,6 +17,8 @@ class HouseSpiderSpider(scrapy.Spider):
     name = "house"
     allowed_domains = ["zillow.com"]
     visited = True
+    #City ERR
+    start_urls = ( 'http://www.zillow.com/homedetails/1004-S-Drios-Paros-Kyklades-Greece-Out-Of-Area-84400/2103215021_zpid/',)
     #zestimate err
     #start_urls = ( 'http://www.zillow.com/homedetails/305-E-5th-St-Bowie-AZ-85605/2102017608_zpid/',)
     #lot size err  FIXED
@@ -25,8 +27,12 @@ class HouseSpiderSpider(scrapy.Spider):
     #start_urls = ( 'http://www.zillow.com/homedetails/(Undisclosed-Address)-Sun-City-AZ-85375/2106415148_zpid/',)
     #community house FIXED
     #start_urls = ( 'http://www.zillow.com/community/coldwater-ranch/2112804733_zpid/',)
+    #Traceback Err 
+    #start_urls = ( 'http://www.zillow.com/homedetails/5145-W-Sanna-St-Glendale-AZ-85302/7734624_zpid/',)
+    #No City 
+    #start_urls = ( 'http://www.zillow.com/homedetails/2-Kardamena-Out-Of-Area-Town-Gr-85302/2103161700_zpid/',)
     #good listing
-    start_urls = ( 'http://www.zillow.com/homedetails/9944-W-Ocotillo-Dr-Sun-City-AZ-85373/8094905_zpid/',)
+    #start_urls = ( 'http://www.zillow.com/homedetails/9944-W-Ocotillo-Dr-Sun-City-AZ-85373/8094905_zpid/',)
     
     def __init__(self, url=None, *args, **kwargs):
         super(HouseSpiderSpider, self).__init__(*args, **kwargs)
@@ -42,8 +48,16 @@ class HouseSpiderSpider(scrapy.Spider):
             house['address'] = address_field
         else:
             house['address'] = address_test.group(1)
-        house['city'] = re.search( r'^(.*?),', response.xpath('//h1/span/text()').extract()[0] ).group(1)
-        house['state'] = re.search( r',\s(.*?)\s', response.xpath('//h1/span/text()').extract()[0] ).group(1)
+        city_field = re.search( r'^(.*?),', response.xpath('//h1/span/text()').extract()[0] )
+        if (city_field != None):
+            house['city'] = city_field.group(1)
+        else:
+            house['city'] = None
+        state_field = re.search( r',\s(.*?)\s', response.xpath('//h1/span/text()').extract()[0] )
+        if (state_field != None):
+            house['state'] = state_field.group(1)
+        else:
+            house['state'] = None
         non_decimal = re.compile(r'[^\d.]+')
         house['price'] = non_decimal.sub('', response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " main-row ")]/span/text()').extract()[0].replace(r'$', "").replace(r',', "").replace( "[^\\d]", "" ) )
         house['sale_status'] = response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " status-icon-row ")]/text()').extract()[1].lstrip().rstrip()

@@ -25,7 +25,6 @@ function importJson() {
         
         if (!init) {
             init = true;
-            document.getElementById('url_input').value = "http://www.zillow.com/homes/for_sale/AZ/fsba,fsbo,new_lt/house,condo,apartment_duplex,townhouse_type/8_rid/days_sort/33.596802,-112.279994,33.571239,-112.325056_rect/14_zm/0_mmm/";
             document.getElementById('min_price').value = 100000;
             document.getElementById('max_price').value = 1000000;
             //Set the headers for both tables
@@ -54,7 +53,10 @@ function updateTables() {
         });
 
         properties.sort(function(a, b){
-            return (a.price/a.rent_zestimate)-(b.price/b.rent_zestimate)
+            var precedence;
+            if (b.rent_zestimate == -1) precedence = -10000;
+            else (a.price/a.rent_zestimate)-(b.price/b.rent_zestimate)
+            return precedence;
         });
     }
     
@@ -84,6 +86,7 @@ function loadData() {
         pico.main = function() {
             var url = document.getElementById("url_input").value
             console.log(crawl.run(url));
+            //console.log(crawl.run_parallel(url));
         }
     } else { 
         //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse
@@ -155,16 +158,12 @@ function addRow(tableID, b) {
     <div id="table_info"> Ranked </div>
     <div class="Search Preferences">
     <form>
-    Input URL: 
-    <input id="url_input" type="text" name="url_input">
-    <br>
     Minimum Price: 
     <input id="min_price" type="text" name="min_price">
     <br>
     Maximum Price: 
     <input id="max_price" type="text" name="max_price">
     <br>
-    <input type="button" value="Prime Data Loader" id="import_button" onclick="loadData()"/>
     <input type="button" value="Update Properties" id="import_button" onclick="importJson()"/>
     
     </form>

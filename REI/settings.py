@@ -13,8 +13,9 @@ SPIDER_MODULES = ['REI.spiders']
 NEWSPIDER_MODULE = 'REI.spiders'
 DOWNLOAD_DELAY = 0.0
 COOKIES_ENABLED = False
-CONCURRENT_REQUESTS = 1000
-CONCURRENT_REQUESTS_PER_DOMAIN = 1000
+CONCURRENT_REQUESTS = 100
+CONCURRENT_REQUESTS_PER_DOMAIN = 100
+AUTOTHROTTLE_ENABLED = False
 
 FEED_EXPORTERS = {
         'sqlite': 'scripts.exporters.SqliteItemExporter',
@@ -34,8 +35,9 @@ USER_AGENT_LIST = [
     'Mozilla/5.0 (compatible; MSIE 9.0; AOL 9.7; AOLBuild 4343.19; Windows NT 6.1; WOW64; Trident/5.0; FunWebProducts)'
 ]
 HTTP_PROXY = 'http://127.0.0.1:8123'
-#Squid Proxies
 
+#Squid Proxies
+#ACCT:45099
 PROXIES = [
     {'ip_port': '173.234.165.60:8800', 'user_pass': ''},#G 
     {'ip_port': '173.234.165.77:8800', 'user_pass': ''},#G
@@ -49,16 +51,15 @@ PROXIES = [
     {'ip_port': '50.31.10.106:8800', 'user_pass': ''},#G
         ]
 
-
-#Random Internet Proxy
-#PROXIES = [{'ip_port': '205.144.165.253:8080', 'user_pass': ''},]
 DOWNLOADER_MIDDLEWARES = {
-     #'REI.middlewares.RandomUserAgentMiddleware': 400,
-     #'REI.middlewares.ProxyMiddleware': 410,
-     #'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
+    #'REI.middlewares.RandomUserAgentMiddleware': 400,
+    #'REI.middlewares.ProxyMiddleware': 410,
+    #'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
+    
+    #TO DISABLE PROXIES ->Comment out HttpProxyMiddleware and RandomProxyMiddleware
     'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware': 110,
     'REI.middlewares.RandomProxyMiddleware': 100,
-    # Disable compression middleware, so the actual HTML pages are cached
+    #Disable compression middleware, so the actual HTML pages are cached
 }
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent

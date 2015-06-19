@@ -1,0 +1,75 @@
+-> ~ May 27, 2015 :: Implementing Scrapy and Regex
+Learning scrapy and regex to scrape house data from zillow. Each Search on the map is accompanied by a list of houses that are scraped by a spide, the map must contain results for no more than 500 houses because beyond that the list does not render all houses.
+
+For determining the url algorithmically, only the properties bounded by the rectangle will be listed, zoom is only for the map
+
+May 31, 2015 :: Zillow Unlimited Property Data
+By subdividing a search into smaller scopes, data sets larger than the imposed 500 house limit zillow sets, the problem now is just time, 700 houses takes 16 minutes, zillow lists approxamitely 3 million houses for sale, not to mention the data on houses not currently on the market. This would take a lot of time to scrape, too much. The solution is to scrape in parallel using random proxy IPs. Testing for this is going to have to be done using a test IP that is ok to get blocked... 
+
+Increase concurrency:
+http://doc.scrapy.org/en/latest/topics/broad-crawls.html
+
+June 8, 2015 :: Implement Tor
+http://pkmishra.github.io/blog/2013/03/18/how-to-run-scrapy-with-TOR-and-multiple-browser-agents-part-1-mac/
+in terminal run: to start tor & polipo
+$tor
+$polipo
+
+Tor is functional, but slow, running multiple spiders at multiple locations would be better
+Did a run with a concurrency of 1000 of pheonix and scraped 15000/23000 before getting blocked
+
+An optional route is determine the areas to search via open data:
+http://www.zillow.com/research/data/
+
+then perform an in depth search once the best areas have been identified
+
+Using proxies 
+http://mahmoud.abdel-fattah.net/2012/04/16/using-scrapy-with-different-many-proxies/
+List of proxies
+http://proxylist.hidemyass.com/search-1301701#listable
+
+June 9, 2015 :: Squid Proxies
+10 proxies are bought from squid proxies after messing around with public proxies for a while, they're determined to be to unreliable and slow
+
+Jun 11, 2015 :: Price and Tax History
+Price History is now also scraped using an ajax response
+
+Set up an export to an sqlite db
+http://zetcode.com/db/sqlitepythontutorial/
+
+Set up a pipeline to an sqlite db
+
+Jun 18, 2015 :: Increasing Concurrent Scrapes
+
+ERROR FIX: Couldn't bind: 24: Too many open files
+
+To find the limit on the number of files per processor:
+launchctl limit
+
+To increase this limit run one of these:
+sudo sysctl -w kern.maxfilesperproc=20000
+ulimit -S -n 2048
+
+SQLITE # of rows in table:
+SELECT Count(*) FROM tblName
+
+Approaches to high concurrency
+Run single scrapy instance iterating over multiple sectored urls
+
+Jun 19, 2015 :: Recursive Subdivision
+Current Method of dividing the zillow results is slow and a significant number of listings are being lost
+In order to deal with this, a new approach will be tried which will recursively subdivide the map into smaller portions 
+
+If map has more than 20 pages of listings:
+    subdivide recursively
+Else:
+    follow rules to extract all house links
+
+Not filtering subdivided requests allows large numbers to be concurrently scraped
+
+Current Speed: 2707 items in 16 mins = 169/min = 2.8/s
+
+the target speed is 100 items/s (sourced from github)
+
+Process DB items into json to be accessed from gh-pages
+
