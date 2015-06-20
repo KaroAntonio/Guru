@@ -15,6 +15,7 @@ class HouseItem(scrapy.Item):
     price = scrapy.Field()
     sale_status = scrapy.Field()
     rent_zestimate = scrapy.Field()
+    zestimate = scrapy.Field()
     mortgage_estimate = scrapy.Field()
     lot_size = scrapy.Field()
     bedrooms = scrapy.Field()

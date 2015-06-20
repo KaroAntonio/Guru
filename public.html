@@ -24,11 +24,11 @@ function importJson() {
         
         if (!init) {
             init = true;
-            document.getElementById('min_price').value = 100000;
+            document.getElementById('min_price').value = 0;
             document.getElementById('max_price').value = 1000000;
             //Set the headers for both tables
             $('.table-static-header-row')
-                .append($('<td></td>').text('Address'))
+                .append($('<td></td>').text('State'))
                 .append($('<td></td>').text('City'))
                 .append($('<td></td>').text('Estimated Rent'))
                 .append($('<td></td>').text('Sale Price'))
@@ -83,7 +83,7 @@ function addRow(tableID, b) {
     if (b == null)
         row.insertCell(0).innerHTML= "Nothing to Receive";
     else {
-        row.insertCell(0).innerHTML= b.address;
+        row.insertCell(0).innerHTML= b.state;
         row.insertCell(1).innerHTML= b.city;
         row.insertCell(2).innerHTML= b.rent_zestimate;
         row.insertCell(3).innerHTML= b.price;

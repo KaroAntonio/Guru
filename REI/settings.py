@@ -39,26 +39,26 @@ HTTP_PROXY = 'http://127.0.0.1:8123'
 #Squid Proxies
 #ACCT:45099
 PROXIES = [
-    {'ip_port': '173.234.165.60:8800', 'user_pass': ''},#G 
-    {'ip_port': '173.234.165.77:8800', 'user_pass': ''},#G
-    {'ip_port': '89.47.28.226:8800', 'user_pass': ''},#G
-    {'ip_port': '206.214.93.182:8800', 'user_pass': ''},#G
-    {'ip_port': '206.214.93.5:8800', 'user_pass': ''},#G
-    {'ip_port': '89.47.28.220:8800', 'user_pass': ''},#G
-    {'ip_port': '173.234.165.182:8800', 'user_pass': ''},#G
-    {'ip_port': '50.31.10.114:8800', 'user_pass': ''},#G
-    {'ip_port': '173.234.165.175:8800', 'user_pass': ''},#G
-    {'ip_port': '50.31.10.106:8800', 'user_pass': ''},#G
+    #{'ip_port': '173.234.165.60:8800', 'user_pass': ''},#B
+    #{'ip_port': '173.234.165.77:8800', 'user_pass': ''},#B
+    #{'ip_port': '89.47.28.226:8800', 'user_pass': ''},#B
+    #{'ip_port': '206.214.93.182:8800', 'user_pass': ''},#B
+    #{'ip_port': '206.214.93.5:8800', 'user_pass': ''},#B
+    {'ip_port': '89.47.28.220:8800', 'user_pass': ''},#B
+    #{'ip_port': '173.234.165.182:8800', 'user_pass': ''},#B
+    #{'ip_port': '50.31.10.114:8800', 'user_pass': ''},#B
+    #{'ip_port': '173.234.165.175:8800', 'user_pass': ''},#B
+    #{'ip_port': '50.31.10.106:8800', 'user_pass': ''},#B
         ]
 
 DOWNLOADER_MIDDLEWARES = {
     #'REI.middlewares.RandomUserAgentMiddleware': 400,
     #'REI.middlewares.ProxyMiddleware': 410,
-    #'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
+    'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
     
     #TO DISABLE PROXIES ->Comment out HttpProxyMiddleware and RandomProxyMiddleware
-    'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware': 110,
-    'REI.middlewares.RandomProxyMiddleware': 100,
+    #'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware': 110,
+    #'REI.middlewares.RandomProxyMiddleware': 100,
     #Disable compression middleware, so the actual HTML pages are cached
 }
 

@@ -1,6 +1,7 @@
 import sqlite3
 import json
 
+print("Loading database...")
 #Setup connection to database
 conn = sqlite3.connect('properties.db')
 conn.row_factory = sqlite3.Row
@@ -15,6 +16,7 @@ rows = c.fetchall()
 properties = [dict(ix) for ix in rows]
 
 #Filter Properties with invalid fields
+print("Filtering...")
 filtered_properties = []
 for p in properties:
     try:
@@ -28,6 +30,7 @@ for p in properties:
 
 #Sort Properties
 #according to rent to price ratio
+print("Sorting...")
 sorted_properties = sorted(filtered_properties, key=lambda p: (float(p['price']) / float(p['rent_zestimate'])))
 
 first = sorted_properties[:2000]
