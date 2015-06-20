@@ -1,0 +1,196 @@
+<!doctype html>
+<meta charset="utf-8">
+<html>
+<head>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="style.css">
+<script type="text/javascript">
+    
+var properties_data,
+    properties,
+    selected,
+    init = false,
+    loaded = false;
+
+importJson();  
+    
+//Import Json
+function importJson() {
+    console.log("Import")
+    
+    d3.json("properties.json", function (data) {
+        properties = data;
+        
+        if (!init) {
+            init = true;
+            document.getElementById('url_input').value = "http://www.zillow.com/homes/for_sale/AZ/fsba,fsbo,new_lt/house,condo,apartment_duplex,townhouse_type/8_rid/days_sort/33.606631,-112.349088,33.581072,-112.394149_rect/14_zm/0_mmm/";
+            document.getElementById('min_price').value = 100000;
+            document.getElementById('max_price').value = 1000000;
+            //Set the headers for both tables
+            $('.table-static-header-row')
+                .append($('<td></td>').text('Address'))
+                .append($('<td></td>').text('City'))
+                .append($('<td></td>').text('Estimated Rent'))
+                .append($('<td></td>').text('Sale Price'))
+                .append($('<td></td>').text('Bedrooms'))
+                .append($('<td></td>').text('Sale Status'));
+        }
+        updateTables()
+    })
+}
+    
+function updateTables() {
+    
+    //Filter and Sort properties
+    var min_price = Number(document.getElementById('min_price').value);
+    var max_price = Number(document.getElementById('max_price').value);
+    
+    if (properties != null) {
+        properties = properties.filter(function (el) {
+          return el.price >= min_price &&
+                    el.price <= max_price;
+        });
+
+        properties.sort(function(a, b){
+            var precedence;
+            if (b.rent_zestimate == -1) precedence = -10000;
+            else (a.price/a.rent_zestimate)-(b.price/b.rent_zestimate)
+            return precedence;
+        });
+    }
+    
+    if (properties != null)
+            document.getElementById('table_info').innerHTML = "Ranked:" + properties.length
+            
+    populateTables();
+}   
+
+function populateTables() {
+    $("#table-rows-table tr").remove();
+    
+    if (properties != null) {
+        properties.forEach(function(d) {
+            addRow("table-rows-table", d)
+        })
+    }
+    
+}
+
+function loadData() {
+    if (!loaded) {
+        loaded = true;
+        pico.load('crawl');
+        //After first Click, button is renamed
+        document.getElementById("import_button").value = "Load Data";
+        pico.main = function() {
+            var url = document.getElementById("url_input").value
+            console.log(crawl.run(url));
+            //console.log(crawl.run_parallel(url));
+        }
+    } else { 
+        //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse
+        var test
+        if (properties != null)
+             test = Date.parse(properties[0].timestamp);
+        else test = 0
+        pico.main()
+        testData()
+        document.getElementById("import_button").value = "Loading...";
+        document.getElementById("import_button").disabled = true;
+
+        //Recursively Test if Data has finished loading
+        function testData () {
+            importJson()
+            if (properties != null) {
+                if (test >= Date.parse(properties[0].timestamp)) {
+                    console.log("Loading...")
+                    setTimeout(testData, 2000);
+                } else {
+                    console.log("Finished Loading!")
+                    document.getElementById("import_button").value = "Load Data";
+                    document.getElementById("import_button").disabled = false;
+                }
+            }
+        }
+        
+    }
+    
+    
+}
+
+function addRow(tableID, b) {
+    var table = document.getElementById(tableID);
+    var rowCount = table.rows.length;
+    var row = table.insertRow(rowCount);
+    if (b == null)
+        row.insertCell(0).innerHTML= "Nothing to Receive";
+    else {
+        row.insertCell(0).innerHTML= b.address;
+        row.insertCell(1).innerHTML= b.city;
+        row.insertCell(2).innerHTML= b.rent_zestimate;
+        row.insertCell(3).innerHTML= b.price;
+        row.insertCell(4).innerHTML= b.bedrooms;
+        row.insertCell(5).innerHTML= b.sale_status;
+        
+    }
+    row.className += " row";
+    
+    //Make row selectable
+    row.onclick = function() {
+            if (selected != null)
+                selected.classList.toggle('selected');
+            selected = this;
+            selected.classList.toggle('selected');
+            window.open(b.zillow_url);
+            
+        }
+}
+   
+</script>
+<title>REI Guru</title>
+</head>
+<body>
+<div class="title">REI Guru</div>
+<div id="message"></div>
+<div id="propertiesTable">
+	<div class="tableTitle">Investment Properties</div>
+    <div id="table_info"> Ranked </div>
+    <div class="Search Preferences">
+    <form>
+    Input URL: 
+    <input id="url_input" type="text" name="url_input">
+    <br>
+    Minimum Price: 
+    <input id="min_price" type="text" name="min_price">
+    <br>
+    Maximum Price: 
+    <input id="max_price" type="text" name="max_price">
+    <br>
+    <input type="button" value="Prime Data Loader" id="import_button" onclick="loadData()"/>
+    <input type="button" value="Update Properties" id="import_button" onclick="importJson()"/>
+    
+    </form>
+    </div>
+     	
+     	     <div class="table-wrapper">
+                <table class="table-static-header">
+                    <thead>
+                        <tr class="table-static-header-row">
+                        </tr>
+                    </thead>
+                </table>
+                <div class="table-rows-table-wrapper">
+                    <table id="table-rows-table">
+                        <tbody>	</tbody>
+                    </table>
+                </div>
+            </div>
+     </div>
+</body>
+</html>
+
+
+<script>  
+  
+</script>
