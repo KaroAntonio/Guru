@@ -73,3 +73,6 @@ the target speed is 100 items/s (sourced from github)
 
 Process DB items into json to be accessed from gh-pages
 
+Benchmark: 9122items/52mins = 175.4/min = 2.92/s
+
+At the current rate, it would take 11 days to scrape the ~3 million properties listed on zillow

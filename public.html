@@ -3,7 +3,6 @@
 <html>
 <head>
 <script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="/pico/client.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <link rel="stylesheet" type="text/css" href="style.css">
 <script type="text/javascript">
@@ -20,7 +19,7 @@ importJson();
 function importJson() {
     console.log("Import")
     
-    d3.json("houses.json", function (data) {
+    d3.json("properties.json", function (data) {
         properties = data;
         
         if (!init) {
@@ -74,48 +73,6 @@ function populateTables() {
             addRow("table-rows-table", d)
         })
     }
-    
-}
-
-function loadData() {
-    if (!loaded) {
-        loaded = true;
-        pico.load('crawl');
-        //After first Click, button is renamed
-        document.getElementById("import_button").value = "Load Data";
-        pico.main = function() {
-            var url = document.getElementById("url_input").value
-            console.log(crawl.run(url));
-            //console.log(crawl.run_parallel(url));
-        }
-    } else { 
-        //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse
-        var test
-        if (properties != null)
-             test = Date.parse(properties[0].timestamp);
-        else test = 0
-        pico.main()
-        testData()
-        document.getElementById("import_button").value = "Loading...";
-        document.getElementById("import_button").disabled = true;
-
-        //Recursively Test if Data has finished loading
-        function testData () {
-            importJson()
-            if (properties != null) {
-                if (test >= Date.parse(properties[0].timestamp)) {
-                    console.log("Loading...")
-                    setTimeout(testData, 2000);
-                } else {
-                    console.log("Finished Loading!")
-                    document.getElementById("import_button").value = "Load Data";
-                    document.getElementById("import_button").disabled = false;
-                }
-            }
-        }
-        
-    }
-    
     
 }
 

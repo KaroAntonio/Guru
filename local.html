@@ -3,7 +3,6 @@
 <html>
 <head>
 <script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="/pico/client.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <link rel="stylesheet" type="text/css" href="style.css">
 <script type="text/javascript">
@@ -20,7 +19,7 @@ importJson();
 function importJson() {
     console.log("Import")
     
-    d3.json("houses.json", function (data) {
+    d3.json("properties.json", function (data) {
         properties = data;
         
         if (!init) {

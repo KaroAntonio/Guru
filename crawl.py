@@ -131,6 +131,3 @@ def gen_urls(url):
     
     return urls
 
-
-
-
