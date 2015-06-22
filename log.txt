@@ -76,3 +76,38 @@ Process DB items into json to be accessed from gh-pages
 Benchmark: 9122items/52mins = 175.4/min = 2.92/s
 
 At the current rate, it would take 11 days to scrape the ~3 million properties listed on zillow
+
+Jun 20, 2015 :: Meeting Notes
+Request Data feeds from 
+
+Filter out under $27,000
+Search by ID, 
+compare 
+Filter out, needs some work, tlc needed, handyman special, fixer upper, great potential, Add certain $ for 
+
+Incorporate Tax Rate into formula.
+
+show Hoa fees
+
+Population trends for areas 
+
+Mortgage rate incentive data
+
+Keep rough track of hours
+
+Update M+P on site updates
+
+LIST:
+LA
+Miami south beach
+Portland
+Florida
+Phoenix
+Seattle
+Housten
+California
+South Dakota
+North Dakota
+West Virginia
+
+Give a list of Large list results

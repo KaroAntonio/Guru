@@ -9,11 +9,25 @@
     
 var properties_data,
     properties,
+    filtered,
     selected,
     init = false,
     loaded = false;
+    
+var filters = [];
+    
+var attributes = [];
 
 importJson();  
+    
+var titles = [
+    ['State','state'],
+    ['City','city'],
+    ['Estimated Rent','rent_zestimate'],
+    ['Sale Price','price'],
+    ['Bedrooms','bedrooms'],
+    ['Sale Status','sale_status'],
+]
 
 //Import Json
 function importJson() {
@@ -27,16 +41,92 @@ function importJson() {
             document.getElementById('min_price').value = 0;
             document.getElementById('max_price').value = 1000000;
             //Set the headers for both tables
-            $('.table-static-header-row')
-                .append($('<td></td>').text('State'))
-                .append($('<td></td>').text('City'))
-                .append($('<td></td>').text('Estimated Rent'))
-                .append($('<td></td>').text('Sale Price'))
-                .append($('<td></td>').text('Bedrooms'))
-                .append($('<td></td>').text('Sale Status'));
+            var title_row = $('#table-titles').empty();
+            
+            for (i = 0; i < titles.length; i++) {
+                attributes.push([]);
+                filters.push([]);
+                title_row.append($('<td></td>').text(titles[i][0]));
+            }
         }
-        updateTables()
+        updateTables();
+        drawFilters();
     })
+}
+    
+function drawFilters() {
+    
+    console.log(attributes[0]);
+    
+    var title_row = $('#table-titles');
+    //console.log(titles);
+    var filter_rows = [
+        $('#table-static-header-row-add-filters').empty(),
+        $('#table-static-header-row-remove-filters').empty(),
+    ]
+    
+    //Add in filters
+    for (var i = 0; i < title_row.children().length; i++){
+        for (j = 0; j < filter_rows.length; j++) {
+            
+            filter_rows[j].append($('<td></td>'));
+            var cell = filter_rows[j].children()[i];
+            var select = document.createElement("select");
+                select.id = "select-" + j.toString() + i.toString();
+            
+            cell.appendChild(select);
+            
+            //Blank Cell
+            var option = document.createElement("option");
+            option.value = "";
+            if (j == 0)
+                option.text = "Filter " + titles[i][0];
+            else 
+                option.text = "Clear Filter";
+            select.appendChild(option);
+            
+            //Fill Add Selects
+            if (j == 0){
+                for (k = 0; k < attributes[i].length; k++) {
+                    if (filters[i].indexOf(attributes[i][k]) == -1) {
+                        var option = document.createElement("option");
+                        option.value = attributes[i][k];
+                        option.text = attributes[i][k];
+                        select.appendChild(option);
+                    }
+                }
+            } else {
+                for (k = 0; k < filters[i].length; k++) {
+                    
+                    var option = document.createElement("option");
+                    option.value = filters[i][k];
+                    option.text = filters[i][k];
+                    select.appendChild(option);
+                }
+            }
+            
+            select.onchange = function (e) {
+                console.log(e)
+                var s = this.options[this.selectedIndex].value;
+                var ii = Number(this.id[this.id.length - 1]);
+                var jj = Number(this.id[this.id.length - 2]);
+                var ie = filters[ii].indexOf(s);
+                if (ie == -1) {
+                    if (jj == 0)
+                        filters[ii].push(s)
+                    else
+                        filters[ii].splice(ie, 1);
+                } else {
+                    if (jj != 0)
+                        filters[ii].splice(ie, 1);
+                }
+                console.log(filters);
+                updateTables();
+                drawFilters();
+                
+            }
+        }
+    }
 }
     
 function updateTables() {
@@ -67,28 +157,34 @@ function updateTables() {
 
 function populateTables() {
     $("#table-rows-table tr").remove();
-    
     if (properties != null) {
         properties.forEach(function(d) {
             addRow("table-rows-table", d)
         })
     }
-    
 }
+
 //Add Row
 function addRow(tableID, b) {
     var table = document.getElementById(tableID);
     var rowCount = table.rows.length;
     var row = table.insertRow(rowCount);
+    
+    //FILTER
+    for (i = 0; i < filters.length; i++) {
+        if (filters[i].indexOf(b[titles[i][1]]) != -1)
+            return
+    }
+    
+    
     if (b == null)
         row.insertCell(0).innerHTML= "Nothing to Receive";
     else {
-        row.insertCell(0).innerHTML= b.state;
-        row.insertCell(1).innerHTML= b.city;
-        row.insertCell(2).innerHTML= b.rent_zestimate;
-        row.insertCell(3).innerHTML= b.price;
-        row.insertCell(4).innerHTML= b.bedrooms;
-        row.insertCell(5).innerHTML= b.sale_status;
+        for (i = 0; i < titles.length; i++) {
+            if (attributes[i].indexOf(b[titles[i][1]]) == -1)
+                attributes[i].push(b[titles[i][1]]);
+            row.insertCell(i).innerHTML = b[titles[i][1]];
+        }
         
     }
     row.className += " row";
@@ -102,6 +198,8 @@ function addRow(tableID, b) {
             window.open(b.zillow_url);
             
         }
+    
+    return;
 }
    
 </script>
@@ -129,8 +227,13 @@ function addRow(tableID, b) {
      	     <div class="table-wrapper">
                 <table class="table-static-header">
                     <thead>
-                        <tr class="table-static-header-row">
+                        <tr id="table-titles" class="table-static-header-row">
                         </tr>
+                        <tr id="table-static-header-row-add-filters" class="table-static-header-row">
+                        </tr>
+                        <tr id="table-static-header-row-remove-filters" class="table-static-header-row">
+                        </tr>
+                        
                     </thead>
                 </table>
                 <div class="table-rows-table-wrapper">
