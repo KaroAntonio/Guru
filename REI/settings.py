@@ -39,18 +39,6 @@ HTTP_PROXY = 'http://127.0.0.1:8123'
 #Squid Proxies
 #ACCT:45099
 PROXIES = [
-<<<<<<< Updated upstream
-    #{'ip_port': '166.88.110.11:8800', 'user_pass': ''},#G
-    #{'ip_port': '50.118.222.125:8800', 'user_pass': ''},#G
-    #{'ip_port': '166.88.110.242:8800', 'user_pass': ''},#G
-    #{'ip_port': '108.62.124.186:8800', 'user_pass': ''},#G
-    #{'ip_port': '108.62.102.209:8800', 'user_pass': ''},#G
-    #{'ip_port': '108.62.102.209:8800', 'user_pass': ''},#G
-    #{'ip_port': '166.88.110.138:8800', 'user_pass': ''},#G
-    #{'ip_port': '108.62.102.27:8800', 'user_pass': ''},#G
-    #{'ip_port': '50.118.222.155:8800', 'user_pass': ''},#G
-    #{'ip_port': '108.62.124.138:8800', 'user_pass': ''},#G
-=======
     {'ip_port': '166.88.110.11:8800', 'user_pass': ''},#G
     {'ip_port': '50.118.222.125:8800', 'user_pass': ''},#G
     {'ip_port': '166.88.110.242:8800', 'user_pass': ''},#G
@@ -61,7 +49,6 @@ PROXIES = [
     {'ip_port': '108.62.102.27:8800', 'user_pass': ''},#G
     {'ip_port': '50.118.222.155:8800', 'user_pass': ''},#G
     {'ip_port': '108.62.124.138:8800', 'user_pass': ''},#G
->>>>>>> Stashed changes
     {'ip_port': '166.88.110.181:8800', 'user_pass': ''},#G
         ]
 
