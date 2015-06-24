@@ -78,3 +78,32 @@ def get_ajax_url(soup, label):
     check_for_null_result(url)
     ajax_url = "http://www.zillow.com" + url.group(1)
     return ajax_url
+
+def parse_taxes_response(self, response):
+        
+    house = response.meta['item']
+    
+    house['tax_url'] = '';
+    tax_history = []
+    pattern = r' { "html": "(.*)" }'
+    html = re.search(pattern, response.body).group(1)
+    html = re.sub(r'\\"', r'"', html)  # Correct escaped quotes
+    html = re.sub(r'\\/', r'/', html)  # Correct escaped forward
+    if (html != ""):
+        soup = BeautifulSoup(html)
+        table = soup.find('table')
+        table_body = table.find('tbody')
+        rows = table_body.find_all('tr')
+        for row in rows:
+            try:
+                cols = row.find_all('td')
+                cols = [ele for ele in cols]
+                date = cols[0].get_text()
+                tax = cols[1].contents[0]
+                assessment = cols[3].get_text()
+                tax_history.append([date, tax, assessment])
+            except:
+                tax_history.append([Error])
+        house['tax_history'] = json.dumps(tax_history)
+        
+    return house

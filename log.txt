@@ -86,10 +86,18 @@ compare
 Filter out, needs some work, tlc needed, handyman special, fixer upper, great potential, Add certain $ for 
 
 Incorporate Tax Rate into formula.
+<<<<<<< Updated upstream
 
 show Hoa fees
 
 Population trends for areas 
+=======
+if there is no tax rate, assume it's the worst at 1.89%
+
+show Hoa fees
+
+(low priority) Population trends for areas 
+>>>>>>> Stashed changes
 
 Mortgage rate incentive data
 
@@ -111,3 +119,12 @@ North Dakota
 West Virginia
 
 Give a list of Large list results
+<<<<<<< Updated upstream
+=======
+
+Jun 20, 2015 :: Implementing Notes
+
+http://googlemapsapi.blogspot.ca/2006/06/geocoding-at-last.html
+https://www.rentometer.com
+http://www.programmableweb.com/api/rentrent
+>>>>>>> Stashed changes

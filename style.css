@@ -1,5 +1,5 @@
 body {
-    overflow: hidden;
+    overflow: scroll;
     font-family: sans-serif;
 }
 
@@ -22,7 +22,6 @@ body {
 
 #propertiesTable {
     display: inline-block;
-    margin-left: 1%;
     text-align: center;
     
 }
@@ -32,7 +31,7 @@ body {
 }
 
 .table-wrapper {
-    margin: 20px auto 40px auto;
+    margin: 20px 20px 40px auto;
     height: 350px;
 }
 
@@ -40,12 +39,15 @@ body {
     height: inherit;
     background: #eeeeee;
 	overflow-y: scroll;
+    overflow-x: hidden;
+    
 }
 
 .table-static-header, #table-rows-table{
     table-layout: fixed;
     width: 100%; 
     border-collapse:collapse; 
+    
 }
 .table-static-header-row td{ 
     padding:7px; 

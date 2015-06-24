@@ -123,11 +123,6 @@ def gen_urls(url):
             newurl = urla + str(newlat1) + "," + str(newlong1) + "," +  str(newlat2) + "," + str(newlong2) + urlb
             
             urls.append(newurl)
-            
-            #print(i, j, newlat1, newlat2, newlong1, newlong2)
-            #print (i, j, newurl)
-            
-    #print("Number of URLS: " + str(len(urls)))
     
     return urls
 
