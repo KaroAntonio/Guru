@@ -59,7 +59,7 @@ DOWNLOADER_MIDDLEWARES = {
     
     #TO DISABLE PROXIES ->Comment out HttpProxyMiddleware and RandomProxyMiddleware
     #'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware': 110,
-    'REI.middlewares.RandomProxyMiddleware': 100,
+    #'REI.middlewares.RandomProxyMiddleware': 100,
     #Disable compression middleware, so the actual HTML pages are cached
 }
 
