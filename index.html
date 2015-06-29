@@ -17,7 +17,8 @@ var properties_data,
 
 var filters = [],
     attributes = [],
-    filter_cells = [];
+    filter_cells = [],
+    showFiltered = false;
     
 importJson();  
     
@@ -49,6 +50,7 @@ function importJson() {
                 attributes.push([]);
                 filters.push([]);
                 title_row.append($('<td></td>').text(titles[i][0]));
+                //toggled.push(false);
             }
         }
         updateTables();
@@ -57,8 +59,6 @@ function importJson() {
 }
     
 function drawFilters() {
-    
-    console.log(attributes[0]);
     
     var title_row = $('#table-titles');
     //console.log(titles);
@@ -87,8 +87,19 @@ function drawFilters() {
                 option.text = "Clear Filter";
             select.appendChild(option);
             
-            //Fill Add Selects
+            //Fill Add / Clear Filter Selects
             if (j == 0){
+                
+                //Sort Attibutes for the dropdowns
+                if (isNaN(attributes[i][0])) {
+                    //As String
+                    attributes[i].sort();
+                } else {
+                    //As Number
+                    attributes[i].sort(function (a,b) {
+                        return (Number(a) - Number(b));
+                    });
+                }
                 for (k = 0; k < attributes[i].length; k++) {
                     if (filters[i].indexOf(attributes[i][k]) == -1) {
                         var option = document.createElement("option");
@@ -97,7 +108,32 @@ function drawFilters() {
                         select.appendChild(option);
                     }
                 }
+                
+                //DRAW Filter Toggle
+                /*
+                var toggle = document.createElement("button");
+                if (!toggled[i]) 
+                    toggle.innerHTML = "O";
+                else
+                    toggle.innerHTML = "X";
+                toggle.id = "toggle-" + i.toString();
+                cell.appendChild(toggle);
+                
+                toggle.onclick = function (e) {
+                    var i = Number(this.id[this.id.length - 1]);
+                    if (toggled[i]) {
+                        toggled[i] = false;
+                    } else {
+                        toggled[i] = true;
+                    }
+                    updateTables();
+                    drawFilters();
+                }
+                */
+                
+                
             } else {
+                filters[i].sort();
                 for (k = 0; k < filters[i].length; k++) {
                     
                     var option = document.createElement("option");
@@ -108,7 +144,6 @@ function drawFilters() {
             }
             
             select.onchange = function (e) {
-                console.log(e)
                 var s = this.options[this.selectedIndex].value;
                 var ii = Number(this.id[this.id.length - 1]);
                 var jj = Number(this.id[this.id.length - 2]);
@@ -122,7 +157,6 @@ function drawFilters() {
                     if (jj != 0)
                         filters[ii].splice(ie, 1);
                 }
-                console.log(filters);
                 updateTables();
                 drawFilters();
                 
@@ -142,7 +176,7 @@ function updateTables() {
           return el.price >= min_price &&
                     el.price <= max_price;
         });
-
+        
         properties.sort(function(a, b){
             var precedence;
             if (b.rent_zestimate == -1) precedence = -10000;
@@ -173,11 +207,20 @@ function addRow(tableID, b) {
     var row = table.insertRow(rowCount);
     
     //FILTER
+    var filtered;
+    if (showFiltered) filtered = true;
+    else filtered = false;
     for (i = 0; i < filters.length; i++) {
-        if (filters[i].indexOf(b[titles[i][1]]) != -1)
-            return
+        if (showFiltered) {
+            if (filters[i].indexOf(b[titles[i][1]]) != -1)
+                filtered = false;
+        } else {
+            if (filters[i].indexOf(b[titles[i][1]]) != -1)
+                filtered = true;
+        }
     }
     
+    if (filtered) return;
     
     if (b == null)
         row.insertCell(0).innerHTML= "Nothing to Receive";
@@ -187,7 +230,6 @@ function addRow(tableID, b) {
                 attributes[i].push(b[titles[i][1]]);
             row.insertCell(i).innerHTML = b[titles[i][1]];
         }
-        
     }
     row.className += " row";
     
@@ -198,10 +240,24 @@ function addRow(tableID, b) {
             selected = this;
             selected.classList.toggle('selected');
             window.open(b.zillow_url);
-            
         }
     
     return;
+}
+    
+function toggleFilters() {
+    var toggle = document.getElementById("toggle_button");
+    console.log("Toggle")
+    if (showFiltered) {
+        toggle.value = "Show Filtered";
+        showFiltered = false;
+    } else {
+        toggle.value = "Hide Filtered";
+        showFiltered = true;
+    }
+    
+    updateTables();
+    drawFilters();
 }
    
 </script>
@@ -222,6 +278,7 @@ function addRow(tableID, b) {
     <input id="max_price" type="text" name="max_price">
     <br>
     <input type="button" value="Update Properties" id="import_button" onclick="importJson()"/>
+        <input type="button" value="Show Filtered" id="toggle_button" onclick="toggleFilters()"/>
     
     </form>
     </div>

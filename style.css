@@ -49,11 +49,16 @@ body {
     border-collapse:collapse; 
     
 }
+
 .table-static-header-row td{ 
     padding:7px; 
     text-align: left;
     background: #666666;
     color: #ffffff;
+}
+
+#table-titles {
+    background-color: #000;
 }
 
 #table-rows-table td{
@@ -82,5 +87,4 @@ body {
 
 .highlight {
     background: #ffffff;
-    
 }

@@ -83,6 +83,8 @@ print("Sorting...")
 sorted_properties = sorted(filtered_properties, key=lambda p: (float(p['rental_valuation'])), reverse=True)
 
 first = sorted_properties[:2000]
+#first = sorted_properties[:20]
+
 '''
 #Print Final Array
 for p in first:
