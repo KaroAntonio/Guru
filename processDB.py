@@ -1,6 +1,7 @@
 import sqlite3
 import json
 import re
+from parse import evaluate_house
 
 print("Loading database...")
 #Setup connection to database
@@ -15,8 +16,6 @@ rows = c.fetchall()
 
 #http://stackoverflow.com/questions/3286525/return-sql-table-as-json-in-python
 properties = [dict(ix) for ix in rows]
-
-#properties = properties[:10]
 
 #Filter Properties with invalid fields
 print("Filtering...")
@@ -41,7 +40,21 @@ blacklist = [
     r'great.{,20}potential',
 ]
 
+state_frequencies = {};
+city_frequencies = {};
+num_blacklisted = 0;
+
+#Filter Properties
 for p in properties:
+    try:
+        state_frequencies[p['state']] += 1;
+    except:
+        state_frequencies[p['state']] = 1;
+    try:
+        city_frequencies[p['city']] += 1;
+    except:
+        city_frequencies[p['city']] = 1;
+        
     valid = True
     try:
         float(p['price'])
@@ -69,13 +82,30 @@ for p in properties:
         desc = p['description'].lower()
         
         for b in blacklist:
-            test = re.search(b, desc)
-            if (test):
-                valid = False
+            isBlack = re.search(b, desc)
+            if (isBlack):
+                #valid = False
+                num_blacklisted += 1;
+                p['price'] = max(float(p['price']) * 1.7, float(p['price']) + 40000);
+                p['notes'] = "Blacklisted"
+                evaluate_house(p);
                 break;
                 
         if valid:
-            filtered_properties.append(p)
+            filtered_properties.append(p);
+print("Properties Blacklisted: " + str(num_blacklisted));
+
+'''
+print("STATE FREQUENCIES");
+for f in state_frequencies:
+    if (f != None):
+        print(str(f) + " " + str(float(state_frequencies[str(f)])/len(properties)));
+
+print("CITY FREQUENCIES");
+for f in sorted(city_frequencies, key=city_frequencies.__getitem__, reverse=True):
+    if (f != None):
+        print(str(f) + " " + str(float(city_frequencies[str(f)])/len(properties)));
+'''
 
 #Sort Properties
 #according to rent to price ratio

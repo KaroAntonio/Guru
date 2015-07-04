@@ -33,9 +33,9 @@ class HouseSpiderSpider(scrapy.Spider):
     #No City 
     #start_urls = ( 'http://www.zillow.com/homedetails/2-Kardamena-Out-Of-Area-Town-Gr-85302/2103161700_zpid/',)
     #Tax Err?
-    #start_urls = ( 'http://www.zillow.com/community/ridgeview/2106666170_zpid/',)
+    start_urls = ( 'http://www.zillow.com/homedetails/236-Leland-Creek-Cir-Winter-Park-CO-80482/2104158017_zpid/',)
     #good listing
-    start_urls = ( 'http://www.zillow.com/homedetails/9944-W-Ocotillo-Dr-Sun-City-AZ-85373/8094905_zpid/',)
+    #start_urls = ( 'http://www.zillow.com/homedetails/9944-W-Ocotillo-Dr-Sun-City-AZ-85373/8094905_zpid/',)
     
     def __init__(self, url=None, *args, **kwargs):
         super(HouseSpiderSpider, self).__init__(*args, **kwargs)

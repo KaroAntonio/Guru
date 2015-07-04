@@ -101,7 +101,7 @@ def parse_price_response(self, response):
             cols = row.find_all('td')
             cols = [ele for ele in cols]
             cols = cols[:3]
-            if (cols[2].find('span') != None):
+            if ((len(cols) >= 3) and cols[2].find('span') != None):
                 date = cols[0].get_text()
                 event = cols[1].get_text()
                 price = cols[2].find('span').get_text()
@@ -143,7 +143,6 @@ def parse_taxes_response(self, response):
     return evaluate_house(house)
 
 def evaluate_house(house):
-    
     #Valuate House based on available information
     rental_income = float(house['rent_zestimate']) #monthly
     price = float(house['price']) #current

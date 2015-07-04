@@ -27,7 +27,7 @@ class MapSpiderSpider(CrawlSpider):
     request_interval = 10
     pauseEnabled = False;
     
-    start_urls = ( 'http://www.zillow.com/homes/for_sale/CA/fsba,fsbo,new_lt/house,condo,apartment_duplex,townhouse_type/9_rid/days_sort/35.637209,-114.590149,32.382281,-120.357971_rect/7_zm/0_mmm/',
+    start_urls = ( 'http://www.zillow.com/homes/for_sale/CO/fsba,fsbo,new_lt/house,condo,apartment_duplex,townhouse_type/10_rid/days_sort/40.163133,-103.629913,38.645836,-106.513824_rect/8_zm/0_mmm/',
     )
     
     rules = (
