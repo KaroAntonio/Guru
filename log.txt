@@ -120,4 +120,56 @@ https://www.rentometer.com
 http://www.programmableweb.com/api/rentrent
 finestexpert.com
 
+Jul 4, 2015 :: Deep Valuation Techniques Survey
 
+Evaluate Houses using expert knowledge techniques:
+    http://mres.com/how-to-evaluate-investment-property/
+    
+Provide an estimate of monthly cashflow
+Figure out taxes
+
+IMPORTANT NUMBERS:
+Monthly Cashflow
+Projected Return on value
+Estimate Vacancy rate based on the ratio of the rental rate to the average rental rate in the area
+
+Jul 7, 2015 :: Monte Carlo Valuation 
+
+Finest Expert turns out to have a lot of over lapping functionality
+It has more functions for comparisons, And it has [potentially] deeper valuation functions.
+The Guru has a deeper pool of properties to draw on, apparently
+~10x the size+, for AZ: 5458 vs zillow's 40,930
+
+Jul 12, 2015 :: HOA Filtering and Valuation
+
+Search for keywords that indicate an HOA, parse for the HOA and assume an HOA otherwise.
+
+Value to predict for 
+
+Price in year X
+
+Using As many available variables as possible
+
+Predict Rent also
+
+A statistical analysis: for each variable, record the average YTY variation of price, then for all variable-variations, compose a weighted average variation based on the
+
+http://www.zillow.com/home-values/
+
+Jul 18, 2015 :: Meeting Notes
+Scrape city-data for city population growth rates, cross refernace for each city
+    maybe only search for positive growth cities
+
+Parse description for HOA fees, assume X for properties with no HOA value
+
+Filter out (mobile), (mobile homes) ... maybe?
+
+list link sources in report
+
+Ability to flag properties according to viewed, good, bad, etc...
+
+Jul 24, 2015 :: App Functionality Upgrade
+-Mark Favourite Houses
+-Filter Out favourites
+-Add Columns
+-Remove Columns

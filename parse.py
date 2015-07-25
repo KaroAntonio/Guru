@@ -144,6 +144,7 @@ def parse_taxes_response(self, response):
 
 def evaluate_house(house):
     #Valuate House based on available information
+    #Perform Projection
     rental_income = float(house['rent_zestimate']) #monthly
     price = float(house['price']) #current
     appreciation = 0.04 #annual
@@ -161,13 +162,18 @@ def evaluate_house(house):
     #ASSUMING
     #house paid in cash
     #constant inflation and property appreciation
-    #no repairs
     #no utilities
     #no income tax
     net_income = 0
     for i in range(0, 15):
+        #subtract 
+        #Mortgage Payments, HOA, Variable Upkeep Costs, vacancy, mgmt costs, income tax
+        #add 
+        #tax deductibles
         net_income += rental_income * pow((1 + inflation),i) * 12
         net_income -= current_taxes * pow((1 + appreciation),i) 
+        if hasattr(house, 'HOA'):
+            print house['HOA']
     
     house['rental_valuation'] = net_income/price
     

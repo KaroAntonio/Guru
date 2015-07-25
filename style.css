@@ -32,7 +32,7 @@ body {
 
 .table-wrapper {
     margin: 20px 20px 40px auto;
-    height: 350px;
+    height: 300px;
 }
 
 .table-rows-table-wrapper{
@@ -46,7 +46,7 @@ body {
 .table-static-header, #table-rows-table{
     table-layout: fixed;
     width: 100%; 
-    border-collapse:collapse; 
+    border-collapse: collapse; 
     
 }
 
@@ -77,8 +77,60 @@ body {
       background: #dddddd;
 }
 
-.selected {
-    background-color: #FBBC2E !important;
+
+.favourite {
+    /*background-color: #F0D1FF !important;*/
+    background-color: #EBC2FF !important;
+}
+
+.selected{
+    /*background-color: #d4d4d4 !important;*/
+    /*border: thin solid #666666;*/
+}
+
+tr.top td { border-top: thin solid black; }
+tr.bottom td { border-bottom: thin solid black; }
+tr.selected td:first-child { border-left: thin solid black; }
+tr.selected td:last-child { border-right: thin solid black; }
+
+.content {
+    /*background-color: #e0e0e0;*/
+}
+
+.data {
+}
+
+#home-data {
+    margin-top: 80px;
+    height: 280px;
+    overflow: scroll;
+}
+
+.search_prefs {
+    display: none;
+}
+
+
+.row-title {
+    float: left;
+}
+
+.row-desc {
+    float: left;
+    margin-left: 10px;
+}
+
+.zillow-link {
+    cursor: pointer;
+    float: left;
+    font-weight: bold;
+    margin-left: 10px;
+    /*background-color: #ffffff !important;*/
+}
+
+.fav-toggle {
+    cursor: pointer;
+    float: left;
 }
 
 #table-rows-table td, .table-static-header td{
