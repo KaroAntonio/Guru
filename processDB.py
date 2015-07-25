@@ -210,7 +210,6 @@ sorted_properties = sorted(filtered_properties, key=lambda p: (float(p['rental_v
 
 size_first = 1000
 first = sorted_properties[:size_first]
-#first = sorted_properties[:20]
 
 #Analyze state + city frequencies for the first properties
 f_city_frequencies = {}

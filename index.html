@@ -239,10 +239,13 @@ function updateTables() {
         });
         
         properties.sort(function(a, b){
+            /*
             var precedence;
             if (b.rent_zestimate == -1) precedence = -10000;
             else (a.price/a.rent_zestimate)-(b.price/b.rent_zestimate)
             return precedence;
+            */
+            return a.rental_valuation - b.rental_valuation
         });
     }
     
