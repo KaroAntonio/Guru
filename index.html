@@ -238,6 +238,7 @@ function updateTables() {
 
 function populateTables() {
     $("#table-rows-table tr").remove();
+    console.log(filtered.length)
     if (filtered != null) {
         row_map = {}
         filtered.forEach(function(d) {

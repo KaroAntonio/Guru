@@ -260,7 +260,7 @@ for f in sorted(city_frequencies, key=city_frequencies.__getitem__, reverse=True
 print("Sorting...")
 sorted_properties = sorted(filtered_properties, key=lambda p: (float(p['rental_valuation'])), reverse=True)
 
-size_first = 100
+size_first = 1000
 first = sorted_properties[:size_first]
 
 #Analyze state + city frequencies for the first properties
