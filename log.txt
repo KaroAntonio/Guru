@@ -157,12 +157,12 @@ A statistical analysis: for each variable, record the average YTY variation of p
 http://www.zillow.com/home-values/
 
 Jul 18, 2015 :: Meeting Notes
-Scrape city-data for city population growth rates, cross refernace for each city
+Scrape city-data for city population growth rates, cross referance for each city
     maybe only search for positive growth cities
 
 Parse description for HOA fees, assume X for properties with no HOA value
 
-Filter out (mobile), (mobile homes) ... maybe?
+Filter out (mobile), (mobile home) ... maybe?
 
 list link sources in report
 
@@ -173,3 +173,15 @@ Jul 24, 2015 :: App Functionality Upgrade
 -Filter Out favourites
 -Add Columns
 -Remove Columns
+
+July 27, 2015 :: AI uses
+Implement ANNs to identify which properties may have HOA fees not mentioned
+
+July 28, 2015 :: City Population Growth Data Gathering
+Built a scrapy spider to build a database (well, json file) of city population data
+
+July 29, 2015 :: Cross Reference Pop Growth Data with properties
+TODO: Validate the top X properties returned from processDB on zillow to ensure only houses that are not off market are returned
+
+July 31, 2015 :: Map Search 
+Use Google map API and Google Geocoding API

@@ -8,13 +8,18 @@ body {
     font-size: 20px;
 }
 
+#map {
+    float: left;
+    width: 50%;
+    height: 300px;
+}
+
 .tableTitle {
     font-size: 25px;
     display: inline;
 }
 
 #table_info {
-    font-size: 20px;
     color: grey;
     margin-left: 10px;
     display: inline;
@@ -23,16 +28,17 @@ body {
 #propertiesTable {
     display: inline-block;
     text-align: center;
-    
+    width: 100%;
+    font-size: 14px;
 }
 
 .table-static-header td {
     width: 33%;
 }
 
-.table-wrapper {
-    margin: 20px 20px 40px auto;
-    height: 300px;
+#table-wrapper {
+    margin: 10px 0px 40px auto;
+    height: 260px;
 }
 
 .table-rows-table-wrapper{
@@ -100,16 +106,19 @@ tr.selected td:last-child { border-right: thin solid black; }
 .data {
 }
 
+#home-data-title {
+    margin-top: 65px;
+    font-size: 18px;
+    width: 50%;
+}
+
 #home-data {
-    margin-top: 80px;
-    height: 280px;
+    float: left;
+    height: 300px;
     overflow: scroll;
+    font-size: 14px;
+    width: 50%;
 }
-
-.search_prefs {
-    display: none;
-}
-
 
 .row-title {
     float: left;

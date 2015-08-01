@@ -1,4 +1,3 @@
-
 import time
 import datetime
 import re
@@ -157,7 +156,7 @@ def evaluate_house(house):
         current_taxes = float(tax_history[0][1].replace(r',', "").replace(r'$', ""))
     except:
         #if there is no tax info available, assume a bad tax rate
-        current_taxes = price * 0.02
+        current_taxes = price * 0.0185
     
     #ASSUMING
     #house paid in cash

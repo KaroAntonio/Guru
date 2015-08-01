@@ -17,10 +17,6 @@ CONCURRENT_REQUESTS = 100
 CONCURRENT_REQUESTS_PER_DOMAIN = 100
 AUTOTHROTTLE_ENABLED = False
 
-FEED_EXPORTERS = {
-        'sqlite': 'scripts.exporters.SqliteItemExporter',
-    }
-
 ITEM_PIPELINES = {
     'REI.pipelines.SQLPipeline': 300,
 }
@@ -59,7 +55,7 @@ DOWNLOADER_MIDDLEWARES = {
     
     #TO DISABLE PROXIES ->Comment out HttpProxyMiddleware and RandomProxyMiddleware
     #'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware': 110,
-    #'REI.middlewares.RandomProxyMiddleware': 100,
+    'REI.middlewares.RandomProxyMiddleware': 100,
     #Disable compression middleware, so the actual HTML pages are cached
 }
 

@@ -35,3 +35,8 @@ class HouseItem(scrapy.Item):
     notes = scrapy.Field()
     latlong = scrapy.Field()
     sqlite_keys = []
+    
+class CityItem(scrapy.Item):
+    city = scrapy.Field()
+    state = scrapy.Field()
+    pop_growth = scrapy.Field()

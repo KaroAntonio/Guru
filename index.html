@@ -4,11 +4,15 @@
 <head>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBi0b_h-aqwf1zL4qZE3P2ZgxAN4c50X9o">
+    </script>
 <link rel="stylesheet" type="text/css" href="style.css">
 <script type="text/javascript">
-    
+  
 var properties_data,
     properties,
+    row_map,
     filtered,
     selected,
     selectedID,
@@ -25,7 +29,8 @@ var filters = [],
     
 if (is_cookie('favourites'))
     favourites = JSON.parse(get_cookie('favourites'))
-importJson();  
+    
+importJson();
 
 var attr_keys = {
     'ID':'id',
@@ -42,7 +47,6 @@ var attr_keys = {
     'Square Feet':'sqrft',
     'Notes':'notes',
     'Rental Valuation':'rental_valuation',
-    
 }
 
 /*
@@ -69,22 +73,43 @@ var titles = [
 //Import Json
 function importJson() {
     console.log("Import")
-    
     d3.json("properties.json", function (data) {
         properties = data;
         
-        if (!init) {
-            init = true;
-            document.getElementById('min_price').value = 0;
-            document.getElementById('max_price').value = 1000000;
-            //Set the headers for both tables
-            
-            
-        }
         initFilters();
         updateTables();
         drawFilters();
+        drawMap();
+        
+        if (!init) {
+            init = true;
+            //toggleMap();
+        }
     })
+}
+    
+function drawMap() {
+    var mapOptions = {
+      center: { lat: 39.82, lng: -98.57},
+      zoom: 4
+    };
+    var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    var marker, i;
+    for (i = 0; i < properties.length; i++) {  
+        var p = properties[i]
+        var latlong = properties[i]['latlong']
+        marker = new google.maps.Marker({
+            position: new google.maps.LatLng(latlong[0], latlong[1]),
+            map: map,
+            //icon: 'assets/blue-marker.png'
+        });
+        
+        google.maps.event.addListener(marker, 'click', (function (p) {
+              return function () {
+                    selectRow('table-rows-table', row_map[p.id], p)
+              };
+        })(p));
+    }
 }
 
 function initFilters() {
@@ -119,7 +144,6 @@ function drawFilters() {
     }
     
     var title_row = $('#table-titles');
-    //console.log(titles);
     var filter_rows = [
         $('#table-static-header-row-add-filters').empty(),
         $('#table-static-header-row-remove-filters').empty(),
@@ -170,29 +194,6 @@ function drawFilters() {
                     }
                 }
                 
-                //DRAW Filter Toggle
-                /*
-                var toggle = document.createElement("button");
-                if (!toggled[i]) 
-                    toggle.innerHTML = "O";
-                else
-                    toggle.innerHTML = "X";
-                toggle.id = "toggle-" + i.toString();
-                cell.appendChild(toggle);
-                
-                toggle.onclick = function (e) {
-                    var i = Number(this.id[this.id.length - 1]);
-                    if (toggled[i]) {
-                        toggled[i] = false;
-                    } else {
-                        toggled[i] = true;
-                    }
-                    updateTables();
-                    drawFilters();
-                }
-                */
-                
-                
             } else {
                 filters[i].sort();
                 for (k = 0; k < filters[i].length; k++) {
@@ -229,15 +230,7 @@ function drawFilters() {
 function updateTables() {
     
     //Filter and Sort properties
-    var min_price = Number(document.getElementById('min_price').value);
-    var max_price = Number(document.getElementById('max_price').value);
-    
     if (properties != null) {
-        properties = properties.filter(function (el) {
-          return el.price >= min_price &&
-                    el.price <= max_price;
-        });
-        
         properties.sort(function(a, b){
             /*
             var precedence;
@@ -254,11 +247,12 @@ function updateTables() {
             document.getElementById('table_info').innerHTML = "Ranked:" + properties.length
             */
     populateTables();
-}   
+}
 
 function populateTables() {
     $("#table-rows-table tr").remove();
     if (properties != null) {
+        row_map = {}
         properties.forEach(function(d) {
             addRow("table-rows-table", d)
         })
@@ -267,10 +261,12 @@ function populateTables() {
 
 //Add Row
 function addRow(tableID, b, rowCount) {
+    
     table = document.getElementById(tableID);
     if (rowCount = null)
         rowCount = table.rows.length;
     var row = table.insertRow(rowCount);
+    row_map[b.id] = row;
     
     //FILTER
     var filtered;
@@ -292,7 +288,7 @@ function addRow(tableID, b, rowCount) {
         row.classList.toggle('favourite')
         
     if (selectedID == b.id)
-        selectRow(tableID, row, b)
+        selectRow(tableID, row, b, false)
     
     if (b == null)
         row.insertCell(0).innerHTML= "Nothing to Receive";
@@ -306,11 +302,13 @@ function addRow(tableID, b, rowCount) {
     row.classList.toggle('row')
     
     //Make row selectable
-    row.onclick = function () { selectRow(tableID, row, b) }
+    row.onclick = function () { selectRow(tableID, row, b, false) }
     return;
 }
     
-function selectRow(tableID, row, b) {
+function selectRow(tableID, row, b, scroll) {
+    if (scroll == null)
+        scroll = true
     //DESELECT last selected Row
     if (selected != null) {
         selected.classList.toggle('selected');
@@ -322,6 +320,7 @@ function selectRow(tableID, row, b) {
     selectedID = b.id
     selected = row
     selected.classList.toggle('selected')
+    if (scroll) $(selected)[0].scrollIntoView()
     //selected.style.display = 'none'
     
     var newRow = table.insertRow(row.rowIndex + 1)
@@ -494,7 +493,33 @@ function removeColumn() {
     updateTables();
     drawFilters();
 }
-
+    
+function toggleMap() {
+    var m = document.getElementById("map");
+    var b = document.getElementById("map_button");
+    
+    if (m.style.display == "") {
+        m.style.display = "none";
+        b.value = "Show Map";
+    } else {
+        m.style.display = "";
+        b.value = "Hide Map";
+    }
+}
+    
+function toggleList() {
+    var m = document.getElementById("table-wrapper");
+    var b = document.getElementById("list_button");
+    
+    if (m.style.display == "") {
+        m.style.display = "none";
+        b.value = "Show List";
+    } else {
+        m.style.display = "";
+        b.value = "Hide List";
+    }
+}   
+    
 </script>
 <title>REI Guru</title>
 </head>
@@ -502,45 +527,41 @@ function removeColumn() {
 <div class="title"></div>
 <div id="message"></div>
 <div id="propertiesTable">
-	<div class="tableTitle">REI Guru</div>
-    <!--<div id="table_info"> Ranked </div>-->
-    <div class="search_prefs">
-    Minimum Price: 
-    <input id="min_price" type="text" name="min_price">
-    <br>
-    Maximum Price: 
-    <input id="max_price" type="text" name="max_price">
-    </div>
-    <br>
-    <!--<input type="button" value="Update Properties" id="import_button" onclick="importJson()"/>-->
-    <input type="button" value="Reset" id="reset_button" onclick="reset()"/>
-    <input type="button" value="Show Filtered" id="toggle_button" onclick="toggleFilters()"/>
-    <input type="button" value="Clear Favourites" id="clear_button" onclick="clearFavourites()"/>
-    <input type="button" value="Show Favourites" id="faves_button" onclick="showFavourites()"/>
-    <!--<input type="button" value="Add Column" id="col_button" onclick="addColumn()"/>-->
-    <select id='addColumn' onchange='addColumn()'></select>
-    <select id='removeColumn' onchange='removeColumn()'></select>
-     	     <div class="table-wrapper">
-                <table class="table-static-header">
-                    <thead>
-                        <tr id="table-titles" class="table-static-header-row">
-                        </tr>
-                        <tr id="table-static-header-row-add-filters" class="table-static-header-row">
-                        </tr>
-                        <tr id="table-static-header-row-remove-filters" class="table-static-header-row">
-                        </tr>
-                        
-                    </thead>
+<div class="tableTitle">REI Guru</div>
+
+<br>
+<!--<input type="button" value="Update Properties" id="import_button" onclick="importJson()"/>-->
+<input type="button" value="Reset" id="reset_button" onclick="reset()"/>
+<input type="button" value="Show Filtered" id="toggle_button" onclick="toggleFilters()"/>
+<input type="button" value="Clear Favourites" id="clear_button" onclick="clearFavourites()"/>
+<input type="button" value="Show Favourites" id="faves_button" onclick="showFavourites()"/>
+<input type="button" value="Hide Map" id="map_button" onclick="toggleMap()"/>
+<input type="button" value="Hide List" id="list_button" onclick="toggleList()"/>
+<select id='addColumn' onchange='addColumn()'></select>
+<select id='removeColumn' onchange='removeColumn()'></select>
+         <div id="table-wrapper">
+            <table class="table-static-header">
+                <thead>
+                    <tr id="table-titles" class="table-static-header-row">
+                    </tr>
+                    <tr id="table-static-header-row-add-filters" class="table-static-header-row">
+                    </tr>
+                    <tr id="table-static-header-row-remove-filters" class="table-static-header-row">
+                    </tr>
+
+                </thead>
+            </table>
+            <div class="table-rows-table-wrapper">
+                <table id="table-rows-table">
+                    <tbody>	</tbody>
                 </table>
-                <div class="table-rows-table-wrapper">
-                    <table id="table-rows-table">
-                        <tbody>	</tbody>
-                    </table>
-                </div>
             </div>
-     </div>
-    <div id="home-data">
-    </div>
+        </div>
+ </div>
+<div id="home-data-title">Home Details</div>
+<div id="home-data"></div>
+<div><div id="map"></div></div>
+
 </body>
 </html>
 

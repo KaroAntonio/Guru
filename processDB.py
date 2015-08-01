@@ -57,6 +57,18 @@ def get_YTY(house):
             yty = 0
         return yty
     
+    
+def add_HOA(p, hoa=200 ):
+    #Add HOA to property,
+    #if no HOA is specified, set to default
+    #TODO analyze properties with no HOA to determine a good HOA
+    p['HOA'] = 200;
+    if p['notes'] != None:
+        p['notes'] += "Has HOA"
+    else:
+        p['notes'] = "Has HOA"
+    evaluate_house(p);
+
 print("Loading database...")
 #Setup connection to database
 conn = sqlite3.connect('properties.db')
@@ -70,11 +82,17 @@ rows = c.fetchall()
 
 #http://stackoverflow.com/questions/3286525/return-sql-table-as-json-in-python
 properties = [dict(ix) for ix in rows]
+#properties = properties[:20]
 
-#properties = properties[:2000]
+#Load City Population Data
+with open('cities.json') as data_file:    
+    cities_array = json.load(data_file)
+cities = {}
+for c in cities_array:
+    cities[c["city"].replace(" ","-") + "-" + c["state"]] = c["pop_growth"]
 
 #Filter Properties with invalid fields
-print("Filtering...")
+
 filtered_properties = []
 conditions = [
     ['rent_zestimate', '-1'],
@@ -83,23 +101,27 @@ conditions = [
 
 ranges = [
     ['price', 27000, 100000000],
+    ['pop_growth', 0, 100000000],
 ]
 
 blacklist = [
     r'fixer upper',
-    r'fix up',
+    r'fix',
+    r'fixing',
     r'handyman',
     r'handy man',
-    r'flip project',
     r'flip',
     r'needs.{,20}work',
     r'tlc',
-    r'great.{,20}potential'
+    r'great.{,20}potential',
+    r'mobile',
 ]
 
 HOA_flags = [
     r'hoa',
-    r'condo fees'
+    r'condo fees',
+    r'condominium',
+    r'',
 ]
 
 state_frequencies = {};
@@ -107,9 +129,12 @@ city_frequencies = {};
 num_blacklisted = 0;
 
 #Analyze Properties
+print("Analyzing...")
 yty_sum = 0
 iyty = 0
-
+oldest = 0 
+youngest = 'zzzzzzzzzzzzzzzzzzzzzzzzzzzz'
+states = []
 for p in properties:
     try:
         state_frequencies[p['state']] += 1;
@@ -120,7 +145,31 @@ for p in properties:
     except:
         city_frequencies[p['city']] = 1;
         
+    if p['state'] in states:
+        pass
+    else:
+        states.append(p['state'])
+        
+    #Cross reference City Data
+    if (p["city"] == None):
+         p["pop_growth"] = None
+    else:
+        city_key = p["city"].replace(" ","-")+"-"+p["state"]
+        if (city_key in cities.keys()):
+            try:
+                p["pop_growth"] = cities[city_key].replace("+","")
+            except:
+                p["pop_growth"] = None
+
+        else:
+            p["pop_growth"] = None
+        
     yty = get_YTY(p)
+    
+    if (p['timestamp'] > oldest):
+        oldest = p['timestamp']
+    if (p['timestamp'] < youngest):
+        youngest = p['timestamp']
     
     if (yty != -1):
         if (yty != 0):
@@ -133,9 +182,11 @@ if (iyty != 0):
     avg_yty = yty_sum / iyty
 else:
     avg_yty = 0
-print (avg_yty, iyty)
+#print (avg_yty, iyty, youngest, oldest)
+#print(states)
 
 #Filter Properties
+print("Filtering...")
 for p in properties:
     #evaluate_house(p)
     valid = True
@@ -149,10 +200,16 @@ for p in properties:
         for c in conditions:
             if (p[c[0]] == c[1]):
                 valid = False
-
+            
+        #Filter out properties with values outsied the range
         for r in ranges:
-            if (int(p[r[0]]) > r[2] or int(p[r[0]]) < r[1]):
+            try:
+                if (float(p[r[0]]) > r[2] or float(p[r[0]]) < r[1]):
+                    valid = False
+                    num_blacklisted += 1;
+            except:
                 valid = False
+                num_blacklisted += 1;
 
         #Properties with prices far higher or lower than the zestimate are no good
         dmax = 2
@@ -167,25 +224,18 @@ for p in properties:
         for b in blacklist:
             isBlack = re.search(b, desc)
             if (isBlack):
-                #valid = False
+                valid = False
                 num_blacklisted += 1;
                 p['price'] = max(float(p['price']) * 1.7, float(p['price']) + 40000);
                 p['notes'] = "Blacklisted"
                 evaluate_house(p);
                 break;
                 
-        for f in HOA_flags:
-            isFlagged = re.search(f, desc)
-            if (isFlagged):
-                #valid = False
-                num_blacklisted += 1;
-                p['HOA'] = 200;
-                if p['notes'] != None:
-                    p['notes'] += "Has HOA"
-                else:
-                    p['notes'] = "Has HOA"
-                evaluate_house(p);
+        for f in HOA_flags: 
+            if (re.search(f, desc)):
+                add_HOA(p)
                 break;
+            
                 
         if valid:
             filtered_properties.append(p);
@@ -208,7 +258,7 @@ for f in sorted(city_frequencies, key=city_frequencies.__getitem__, reverse=True
 print("Sorting...")
 sorted_properties = sorted(filtered_properties, key=lambda p: (float(p['rental_valuation'])), reverse=True)
 
-size_first = 1000
+size_first = 100
 first = sorted_properties[:size_first]
 
 #Analyze state + city frequencies for the first properties
@@ -226,6 +276,7 @@ for p in first:
     
 #Process City Frequencies
 #Ratio of the number of cities in the top slice of the database, to the whole database
+'''
 city_ratios = {}
 num_cities = 100
 i = 0
@@ -236,7 +287,7 @@ for f in f_city_frequencies:
     #print (f, f_city_frequencies[f],city_frequencies[f], city_ratios[f])
 for f in sorted(f_city_frequencies, key=f_city_frequencies.__getitem__, reverse=True):
     print (f,  f_city_frequencies[f])
-
+'''
 '''
 #Print Final Array
 for p in first:
