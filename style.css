@@ -28,8 +28,8 @@ body {
 #propertiesTable {
     display: inline-block;
     text-align: center;
-    width: 100%;
     font-size: 14px;
+    height: 50%;
 }
 
 .table-static-header td {
@@ -83,15 +83,8 @@ body {
       background: #dddddd;
 }
 
-
 .favourite {
-    /*background-color: #F0D1FF !important;*/
     background-color: #EBC2FF !important;
-}
-
-.selected{
-    /*background-color: #d4d4d4 !important;*/
-    /*border: thin solid #666666;*/
 }
 
 tr.top td { border-top: thin solid black; }
@@ -99,18 +92,26 @@ tr.bottom td { border-bottom: thin solid black; }
 tr.selected td:first-child { border-left: thin solid black; }
 tr.selected td:last-child { border-right: thin solid black; }
 
-.content {
-    /*background-color: #e0e0e0;*/
-}
-
-.data {
-}
-
 #home-data-title {
+    background: #666666;
+    color: #ffffff;
     margin-top: 65px;
     font-size: 18px;
-    width: 50%;
+    width: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
+
+#map-title {
+    background: #666666;
+    float: left;
+    color: #ffffff;
+    font-size: 18px;
+    width: 50%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
 
 #home-data {
     float: left;
@@ -118,6 +119,7 @@ tr.selected td:last-child { border-right: thin solid black; }
     overflow: scroll;
     font-size: 14px;
     width: 50%;
+    background: #eeeeee;
 }
 
 .row-title {

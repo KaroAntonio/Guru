@@ -13,19 +13,20 @@
 var properties_data,
     properties,
     row_map,
-    filtered,
     selected,
     selectedID,
     content,
     table,
     init = false,
-    loaded = false;
+    loaded = false,
+    showFiltered = false;
     
 var filters = [],
     attributes = [],
     filter_cells = [],
     favourites = [],
-    showFiltered = false;
+    filtered = [];
+    
     
 if (is_cookie('favourites'))
     favourites = JSON.parse(get_cookie('favourites'))
@@ -95,9 +96,9 @@ function drawMap() {
     };
     var map = new google.maps.Map(document.getElementById('map'), mapOptions);
     var marker, i;
-    for (i = 0; i < properties.length; i++) {  
-        var p = properties[i]
-        var latlong = properties[i]['latlong']
+    for (i = 0; i < filtered.length; i++) {  
+        var p = filtered[i]
+        var latlong = p['latlong']
         marker = new google.maps.Marker({
             position: new google.maps.LatLng(latlong[0], latlong[1]),
             map: map,
@@ -193,7 +194,6 @@ function drawFilters() {
                         select.appendChild(option);
                     }
                 }
-                
             } else {
                 filters[i].sort();
                 for (k = 0; k < filters[i].length; k++) {
@@ -221,42 +221,60 @@ function drawFilters() {
                 }
                 updateTables();
                 drawFilters();
-                
+                drawMap();
             }
         }
     }
 }
     
 function updateTables() {
-    
     //Filter and Sort properties
-    if (properties != null) {
-        properties.sort(function(a, b){
-            /*
-            var precedence;
-            if (b.rent_zestimate == -1) precedence = -10000;
-            else (a.price/a.rent_zestimate)-(b.price/b.rent_zestimate)
-            return precedence;
-            */
-            return a.rental_valuation - b.rental_valuation
-        });
-    }
-    
-    /*
-    if (properties != null)
-            document.getElementById('table_info').innerHTML = "Ranked:" + properties.length
-            */
+    //SORT
+    sortProperties()
+    //FILTER
+    filterProperties();
     populateTables();
 }
 
 function populateTables() {
     $("#table-rows-table tr").remove();
-    if (properties != null) {
+    if (filtered != null) {
         row_map = {}
-        properties.forEach(function(d) {
+        filtered.forEach(function(d) {
             addRow("table-rows-table", d)
         })
     }
+}
+
+function sortProperties() {
+    if (properties != null) {
+        properties.sort(function(a, b){
+            return a.rental_valuation - b.rental_valuation
+        });
+    }
+}
+    
+function filterProperties() {
+    //FILTER
+    filtered = [];
+    var isFiltered = false;
+    for (i = 0; i < properties.length; i++) {
+        var p = properties[i]
+        if (showFiltered) isFiltered = true;
+        else isFiltered = false;
+        for (j = 0; j < filters.length; j++) {
+            if (showFiltered) {
+                if (filters[j].indexOf(p[attr_keys[titles[j]]]) != -1)
+                    isFiltered = false;
+            } else {
+                if (filters[j].indexOf(p[attr_keys[titles[j]]]) != -1)
+                    isFiltered = true;
+            }
+        }
+        if (isFiltered == false)
+            filtered.push(p)
+    }
+    return filtered
 }
 
 //Add Row
@@ -268,25 +286,9 @@ function addRow(tableID, b, rowCount) {
     var row = table.insertRow(rowCount);
     row_map[b.id] = row;
     
-    //FILTER
-    var filtered;
-    if (showFiltered) filtered = true;
-    else filtered = false;
-    for (i = 0; i < filters.length; i++) {
-        if (showFiltered) {
-            if (filters[i].indexOf(b[attr_keys[titles[i]]]) != -1)
-                filtered = false;
-        } else {
-            if (filters[i].indexOf(b[attr_keys[titles[i]]]) != -1)
-                filtered = true;
-        }
-    }
-    
-    if (filtered) return;
-    
     if (favourites.indexOf(b.id) != -1)
         row.classList.toggle('favourite')
-        
+    
     if (selectedID == b.id)
         selectRow(tableID, row, b, false)
     
@@ -374,9 +376,6 @@ function selectRow(tableID, row, b, scroll) {
     }
     
     content.colSpan = titles.length;
-
-    //window.open(b.zillow_url);
-    //updateTables()
 }
     
 function toggleFav(toggle, row, content, b) {
@@ -406,6 +405,7 @@ function toggleFilters() {
     
     updateTables();
     drawFilters();
+    drawMap();
 }
     
 function set_cookie ( cookie_name, cookie_value, lifespan_in_days, valid_domain ) {
@@ -449,6 +449,7 @@ function reset() {
     initFilters();
     updateTables();
     drawFilters();
+    drawMap();
 }
     
 function showFavourites() {
@@ -466,6 +467,7 @@ function showFavourites() {
         filters[titles.indexOf('ID')].push(favourites[i])
     updateTables();
     drawFilters();
+    drawMap();
 }
     
 function addColumn() {
@@ -536,7 +538,7 @@ function toggleList() {
 <input type="button" value="Clear Favourites" id="clear_button" onclick="clearFavourites()"/>
 <input type="button" value="Show Favourites" id="faves_button" onclick="showFavourites()"/>
 <input type="button" value="Hide Map" id="map_button" onclick="toggleMap()"/>
-<input type="button" value="Hide List" id="list_button" onclick="toggleList()"/>
+<!--<input type="button" value="Hide List" id="list_button" onclick="toggleList()"/>-->
 <select id='addColumn' onchange='addColumn()'></select>
 <select id='removeColumn' onchange='removeColumn()'></select>
          <div id="table-wrapper">
@@ -548,7 +550,6 @@ function toggleList() {
                     </tr>
                     <tr id="table-static-header-row-remove-filters" class="table-static-header-row">
                     </tr>
-
                 </thead>
             </table>
             <div class="table-rows-table-wrapper">
@@ -558,7 +559,7 @@ function toggleList() {
             </div>
         </div>
  </div>
-<div id="home-data-title">Home Details</div>
+<div id="home-data-title">&nbsp&nbsp&nbsp&nbspHome Details</div>
 <div id="home-data"></div>
 <div><div id="map"></div></div>
 

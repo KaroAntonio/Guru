@@ -115,6 +115,8 @@ blacklist = [
     r'tlc',
     r'great.{,20}potential',
     r'mobile',
+    r'as is',
+    r'as-is',
 ]
 
 HOA_flags = [

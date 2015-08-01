@@ -185,3 +185,4 @@ TODO: Validate the top X properties returned from processDB on zillow to ensure 
 
 July 31, 2015 :: Map Search 
 Use Google map API and Google Geocoding API
+Blacklist As-is

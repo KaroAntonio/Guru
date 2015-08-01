@@ -35,6 +35,13 @@ def stdchannel_redirected(stdchannel, dest_filename):
             
 geocoder = Geocoder(client_id=None, private_key='AIzaSyBi0b_h-aqwf1zL4qZE3P2ZgxAN4c50X9o')
 
+#load geocode cache
+try:
+    with open('geocache.json') as data_file:    
+        cache = json.load(data_file)
+except:
+    cache = {}
+
 #load properties
 with open('properties.json') as data_file:    
     properties = json.load(data_file)
@@ -44,10 +51,14 @@ with stdchannel_redirected(sys.stderr, os.devnull):
     i = 0
     for p in properties:
         i += 1
-        address = p["address"] + " " + p["city"] + " " + p["state"]
-        l = geocoder.geocode(address)
-        latlong = [ l.latitude, l.longitude]
-        p["latlong"] = latlong
+        if p["id"] in cache:
+            p["latlong"] = cache[p["id"]]
+        else:
+            address = p["address"] + " " + p["city"] + " " + p["state"]
+            l = geocoder.geocode(address)
+            latlong = [ l.latitude, l.longitude]
+            p["latlong"] = latlong
+            cache[p["id"]] = latlong
         
         #print percent progress
         sys.stdout.write("\r%d%%" % (float(i)/len(properties) *100.0))
@@ -58,3 +69,7 @@ print ("\nGeoCoding Complete")
 #dump properties
 with open('properties.json', 'w') as outfile:
     json.dump(properties, outfile)
+    
+#dump cache
+with open('geocache.json', 'w') as outfile:
+    json.dump(cache, outfile)
