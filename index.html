@@ -226,11 +226,11 @@ function drawFilters() {
         }
     }
 }
-    
+
 function updateTables() {
     //Filter and Sort properties
     //SORT
-    sortProperties()
+    sortProperties();
     //FILTER
     filterProperties();
     populateTables();
@@ -238,7 +238,6 @@ function updateTables() {
 
 function populateTables() {
     $("#table-rows-table tr").remove();
-    console.log(filtered.length)
     if (filtered != null) {
         row_map = {}
         filtered.forEach(function(d) {
@@ -254,7 +253,7 @@ function sortProperties() {
         });
     }
 }
-    
+
 function filterProperties() {
     //FILTER
     filtered = [];
@@ -308,16 +307,18 @@ function addRow(tableID, b, rowCount) {
     row.onclick = function () { selectRow(tableID, row, b, false) }
     return;
 }
-    
+
 function selectRow(tableID, row, b, scroll) {
     if (scroll == null)
         scroll = true
     //DESELECT last selected Row
     if (selected != null) {
-        selected.classList.toggle('selected');
-        //selected.style.display = 'table-row'
-        content.parentNode.removeChild(content);
-        selected.classList.toggle('top')
+        try {
+            selected.classList.toggle('selected');
+            //selected.style.display = 'table-row'
+            content.parentNode.removeChild(content);
+            selected.classList.toggle('top')
+        } finally {  }
     }
     
     selectedID = b.id
@@ -346,13 +347,6 @@ function selectRow(tableID, row, b, scroll) {
     toggle.onclick = function() { toggleFav(toggle, row, content, b) }
     content.appendChild(toggle)
     
-    /*
-    var title = document.createElement('div')
-    title.innerHTML = "Home Data"
-    title.className = "row-title"
-    content.appendChild(title)
-    */
-    
     var link = document.createElement('div')
     link.className = "zillow-link"
     link.innerHTML = "View Home"
@@ -370,7 +364,6 @@ function selectRow(tableID, row, b, scroll) {
             var data = document.createElement('div')
             data.className = "data"
             data.innerHTML = property + ": " + b[property]
-            //content.appendChild(data)
             if (b[property] != null)
                 document.getElementById('home-data').appendChild(data)
         }
@@ -387,7 +380,7 @@ function toggleFav(toggle, row, content, b) {
         toggle.innerHTML = "&#9733"
     } else {
         toggle.innerHTML = "&#9734"
-        favourites.splice(favourites.indexOf(b.id,1))
+        favourites.splice(favourites.indexOf(b.id),1)
     }
     set_cookie('favourites',JSON.stringify(favourites),365)
     
@@ -559,15 +552,12 @@ function toggleList() {
                 </table>
             </div>
         </div>
- </div>
+</div>
 <div id="home-data-title">&nbsp&nbsp&nbsp&nbspHome Details</div>
 <div id="home-data"></div>
 <div><div id="map"></div></div>
-
 </body>
 </html>
-
-
 <script>  
   
 </script>

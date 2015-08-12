@@ -32,8 +32,8 @@ def gen_city_urls():
         "AS":"American-Samoa",
         "NC":"North-Carolina",
         "AK":"Alaska",
-        
     }
+    
     print("Loading database...")
     #Setup connection to database
     conn = sqlite3.connect('properties.db')
@@ -71,5 +71,5 @@ def gen_city_urls():
 
 #Call Scrapy
 #gen_city_urls()
-subprocess.call('rm cities.json', shell=True);
-subprocess.call('scrapy crawl city -o cities.json', shell=True);
+subprocess.call('rm cities.json', shell=True)
+subprocess.call('scrapy crawl city -o cities.json', shell=True)
