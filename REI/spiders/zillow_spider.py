@@ -3,10 +3,10 @@ import time
 import datetime
 import re
 import json
-from scraper import get_ajax_url
-from scraper import get_price_history
+from REI.scraper import get_ajax_url
+from REI.scraper import get_price_history
 from bs4 import BeautifulSoup
-from crawl import gen_urls
+from REI.crawl import gen_urls
 from random import randint
 from scrapy.http.request import Request
 from scrapy.contrib.spiders import CrawlSpider, Rule

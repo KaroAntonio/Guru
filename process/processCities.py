@@ -36,7 +36,7 @@ def gen_city_urls():
     
     print("Loading database...")
     #Setup connection to database
-    conn = sqlite3.connect('properties.db')
+    conn = sqlite3.connect('storage/properties.db')
     conn.row_factory = sqlite3.Row
     #establish connection cursor
     c = conn.cursor()
@@ -66,10 +66,8 @@ def gen_city_urls():
         urls.append("http://www.city-data.com/city/"+c+".html")
         
     print("Num Cities Processed: " + str(len(cities)))
-
     return urls
 
-#Call Scrapy
-#gen_city_urls()
-subprocess.call('rm cities.json', shell=True)
-subprocess.call('scrapy crawl city -o cities.json', shell=True)
+
+subprocess.call('rm process/cities.json', shell=True)
+subprocess.call('scrapy crawl city -o process/cities.json', shell=True)

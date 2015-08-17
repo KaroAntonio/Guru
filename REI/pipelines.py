@@ -11,7 +11,7 @@ from scrapy.contrib.exporter import XmlItemExporter
 
 class SQLPipeline(object):
     def __init__(self):
-        self.filename = 'properties.db'
+        self.filename = 'storage/properties.db'
         self.conn = sqlite3.connect(self.filename)
         self.conn.text_factory = str
         self.cursor = self.conn.cursor()

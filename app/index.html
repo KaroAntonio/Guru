@@ -5,7 +5,7 @@
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script type="text/javascript"
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBi0b_h-aqwf1zL4qZE3P2ZgxAN4c50X9o">
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrM5gsBAxzKn_muM0x2QxBiJtLiy_YsG4">
     </script>
 <link rel="stylesheet" type="text/css" href="style.css">
 <script type="text/javascript">
@@ -50,20 +50,6 @@ var attr_keys = {
     'Rental Valuation':'rental_valuation',
 }
 
-/*
-var titles = [
-    ['ID','id'],
-    ['State','state'],
-    ['City','city'],
-    //['Address', 'address'],
-    //['Valuation','rental_valuation'],
-    //['Estimated Rent','rent_zestimate'],
-    //['Sale Price','price'],
-    ['Bedrooms','bedrooms'],
-    ['Sale Status','sale_status'],
-]
-*/
-
 var titles = [
     'ID',
     'State',
@@ -84,7 +70,7 @@ function importJson() {
         
         if (!init) {
             init = true;
-            //toggleMap();
+            toggleMap();
         }
     })
 }
@@ -121,7 +107,12 @@ function initFilters() {
         attributes.push([]);
         //filters[titles[i]] = [];
         filters.push([]);
-        title_row.append($('<td></td>').text(titles[i]));
+        //title_row.append($('<td></td>').text(titles[i]));
+        var tm = $('<td><div class="tablemenu"><ul><li class="has-sub" id="tl_'+i+'"><a><span id="tt_'+i+'"></span></a></li></ul></div></td>')
+        title_row.append(tm);
+        $('#tt_'+i)[0].innerHTML = titles[i];
+        $('#tl_'+i).append('<ul><li><a><span id="ts_'+i+'0"></span></a></li><li><a><span id="ts_'+i+'1"></span></a></li></ul>')
+        console.log($('#tl_'+i));
     }
 }
     
@@ -141,7 +132,6 @@ function drawFilters() {
     removeCol[removeCol.length] = new Option('Remove Column', null);
     for (var i = 0; i < titles.length; ++i) {
         removeCol[removeCol.length] = new Option(titles[i], titles[i]);
-        
     }
     
     var title_row = $('#table-titles');
@@ -161,7 +151,9 @@ function drawFilters() {
             var select = document.createElement("select");
                 select.id = "select-" + j.toString() + i.toString();
             
-            cell.appendChild(select);
+            //Add Select to Table List
+            $('#ts_'+String(i)+String(j))[0].appendChild(select);
+            //cell.appendChild(select);
             
             //Blank Cell
             var option = document.createElement("option");
@@ -390,10 +382,10 @@ function toggleFilters() {
     var toggle = document.getElementById("toggle_button");
     console.log("Toggle")
     if (showFiltered) {
-        toggle.value = "Show Filtered";
+        toggle.innerHTML = "Show Filtered";
         showFiltered = false;
     } else {
-        toggle.value = "Hide Filtered";
+        toggle.innerHTML = "Hide Filtered";
         showFiltered = true;
     }
     
@@ -491,15 +483,18 @@ function removeColumn() {
 }
     
 function toggleMap() {
-    var m = document.getElementById("map");
+    var e = document.getElementById("details");
     var b = document.getElementById("map_button");
+    var t = document.getElementById("table-wrapper");
     
-    if (m.style.display == "") {
-        m.style.display = "none";
-        b.value = "Show Map";
+    if (e.style.display == "") {
+        e.style.display = "none";
+        b.innerHTML = "Show Details";
+        t.height = window.innerHeight+'px';
     } else {
-        m.style.display = "";
-        b.value = "Hide Map";
+        e.style.display = "";
+        b.innerHTML = "Hide Details";
+        t.height = '260px';
     }
 }
     
@@ -520,21 +515,34 @@ function toggleList() {
 <title>REI Guru</title>
 </head>
 <body>
-<div class="title"></div>
-<div id="message"></div>
+<div class='cssmenu'>
+<ul>
+    <li id='menu-title'><a><span>REI Guru</span></a></li>
+   <li class='has-sub'><a href='#'><span>Options</span></a>
+      <ul>
+          <li class='' onclick="toggleFilters()"><a href='#'><span id="toggle_button">Show Filtered</span></a></li>
+          <li class='' onclick="showFavourites()"><a href='#'><span id="faves_button">Show Favourites</span></a></li>
+          <li class='' onclick="clearFavourites()"><a href='#'><span id="clear_button">Clear Favourites</span></a></li>
+          <li class='' onclick="toggleMap()"><a href='#'><span id="map_button">Hide Details</span></a></li>
+          <li class='' onclick="reset()"><a href='#'><span id="reset_button">Reset</span></a></li>
+          <li class=''><a href='#'><span><select id='addColumn' onchange='addColumn()'></select></span></a></li>
+          <li class=''><a href='#'><span><select id='removeColumn' onchange='removeColumn()'></select></span></a></li>
+      </ul>
+       
+   </li>
+    
+    
+</ul>
+</div>
 <div id="propertiesTable">
-<div class="tableTitle">REI Guru</div>
-
-<br>
 <!--<input type="button" value="Update Properties" id="import_button" onclick="importJson()"/>-->
+<!--
 <input type="button" value="Reset" id="reset_button" onclick="reset()"/>
 <input type="button" value="Show Filtered" id="toggle_button" onclick="toggleFilters()"/>
 <input type="button" value="Clear Favourites" id="clear_button" onclick="clearFavourites()"/>
 <input type="button" value="Show Favourites" id="faves_button" onclick="showFavourites()"/>
-<input type="button" value="Hide Map" id="map_button" onclick="toggleMap()"/>
+<input type="button" value="Hide Map" id="map_button" onclick="toggleMap()"/>-->
 <!--<input type="button" value="Hide List" id="list_button" onclick="toggleList()"/>-->
-<select id='addColumn' onchange='addColumn()'></select>
-<select id='removeColumn' onchange='removeColumn()'></select>
          <div id="table-wrapper">
             <table class="table-static-header">
                 <thead>
@@ -554,8 +562,10 @@ function toggleList() {
         </div>
 </div>
 <div id="home-data-title">&nbsp&nbsp&nbsp&nbspHome Details</div>
+<div id="details">
 <div id="home-data"></div>
 <div><div id="map"></div></div>
+    </div>
 </body>
 </html>
 <script>  

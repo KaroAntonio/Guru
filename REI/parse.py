@@ -13,7 +13,7 @@ import scrapy
 from scrapy.http.request import Request
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
-from REI.items import HouseItem
+from items import HouseItem
 
 def parse_house_response(self, response):
     house = HouseItem()

@@ -3,14 +3,14 @@ import time
 import datetime
 import re
 import json
-from parse import parse_house_response
-from parse import parse_taxes_response
-from parse import parse_price_response
-from scraper import get_ajax_url
-from scraper import get_price_history
+from REI.parse import parse_house_response
+from REI.parse import parse_taxes_response
+from REI.parse import parse_price_response
+from REI.scraper import get_ajax_url
+from REI.scraper import get_price_history
 from bs4 import BeautifulSoup
-from crawl import gen_urls
-from crawl import div_url
+from REI.crawl import gen_urls
+from REI.crawl import div_url
 from random import randint
 from scrapy.http.request import Request
 from scrapy.contrib.spiders import CrawlSpider, Rule
@@ -27,7 +27,7 @@ class MapSpiderSpider(CrawlSpider):
     request_interval = 10
     pauseEnabled = False;
     
-    start_urls = ( 'http://www.zillow.com/homes/for_sale/AL/fsba,fsbo,new_lt/house,condo,apartment_duplex,townhouse_type/4_rid/days_sort/35.880148,-80.908814,29.267232,-92.444459_rect/6_zm/0_mmm/',
+    start_urls = ( 'http://www.zillow.com/homes/for_sale/CA/9_rid/37.96423,-121.299362,37.186032,-122.741318_rect/9_zm/',
     )
     
     rules = (
