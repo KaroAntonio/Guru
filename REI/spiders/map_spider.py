@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 from REI.crawl import gen_urls
 from REI.crawl import div_url
 from random import randint
+from random import uniform
 from scrapy.http.request import Request
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
@@ -23,17 +24,18 @@ class MapSpiderSpider(CrawlSpider):
     visited = True
     initialized = False
     requests = 0
-    max_interval = 10
-    request_interval = 10
-    pauseEnabled = False;
+    request_interval_range = [1000,2000]
+    request_interval = request_interval_range[0]
+    pause_range = [(5*60),(10*60)]
+    pauseEnabled = True;
     
-    start_urls = ( 'http://www.zillow.com/homes/for_sale/CA/9_rid/37.96423,-121.299362,37.186032,-122.741318_rect/9_zm/',
+    #Make sure the URL comes from the state view of the map (or listings are loaded dynamically)
+    start_urls = ( 'http://www.zillow.com/homes/for_sale/NM/41_rid/37.396346,-100.255738,30.902224,-111.791382_rect/6_zm/',
     )
     
     rules = (
         # Extract links matching 'homes' (but not matching 'subsection.php')
         # and follow links from them (since no callback means follow=True by default).
-        
         #Once a link is visited, do not follow it again
         Rule(LinkExtractor(allow=('/homes.*?_p/', ), deny=('subsection\.php', )), follow=visited, ),
 
@@ -45,6 +47,17 @@ class MapSpiderSpider(CrawlSpider):
     def __init__(self, url=None, *args, **kwargs):
         super(MapSpiderSpider, self).__init__(*args, **kwargs)
         #self.start_urls = gen_urls(url)
+        
+    def pause(self):
+        self.requests += 1
+        if (self.pauseEnabled & (self.requests % self.request_interval == 0)):
+            print("Pause")
+            self.request_interval = randint(
+                self.request_interval_range[0],
+                self.request_interval_range[1])
+            pause_time = uniform(self.pause_range[0],self.pause_range[1])
+            time.sleep(pause_time)
+            print("Paused " + str(pause_time) + "s")
     
     def parse_start_url(self,response):
         if (self.initialized == False):
@@ -56,9 +69,10 @@ class MapSpiderSpider(CrawlSpider):
         
     def parse_map(self,response):
         # check if map returns over twenty pages
+        self.pause()
         pageEls = response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " zsg-pagination ")]/li/a/text()').extract()
         if (len(pageEls) == 7):
-            #there are more than 5 or 6 pages
+            #if there are less than 20 pages
             if (pageEls[5] != '20'):
                 print("<20 Pages, Parse Map: " + response.url);
                 parse_request = Request(response.url, 
@@ -80,33 +94,19 @@ class MapSpiderSpider(CrawlSpider):
         return
        
     def link_callback(self,response):
-        #somehow couldnt remove this to another function
-        self.requests += 1
-        if (self.pauseEnabled & (self.requests % self.request_interval == 0)):
-            print("Pause")
-            self.request_interval = randint(0,self.max_interval)
-            pause_time = randint(0,200)/100
-            time.sleep(pause_time)
-            print("Paused " + str(pause_time) + "s")
+        self.pause()
     
     def parse_house(self,response):
-        #wait a random amount of time to disguise spider
-        #time.sleep(randint(0,50)/100)
-        self.requests += 1
-        if (self.pauseEnabled & (self.requests % self.request_interval == 0)):
-            print("Pause")
-            self.request_interval = randint(1,self.max_interval)
-            pause_time = randint(0,200)/100
-            time.sleep(pause_time)
-            print("Paused " + str(pause_time) + "s")
-        
         #Parse House 
+        self.pause()
         return parse_house_response(self, response)
         
     def parse_history(self,response):
         #Parse Price History Table
+        self.pause()
         return parse_price_response(self, response)
         
     def parse_taxes(self,response):
         #Parse Tax History Table
+        self.pause()
         yield parse_taxes_response(self, response)

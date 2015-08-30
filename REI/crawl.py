@@ -26,11 +26,6 @@ def run_parallel(url):
     
     return
 
-def process_DB(db_name):
-    
-    
-    return
-
 def div_url(url, base):
     #split the url into quarters with smaller scopes
     

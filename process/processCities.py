@@ -32,6 +32,8 @@ def gen_city_urls():
         "AS":"American-Samoa",
         "NC":"North-Carolina",
         "AK":"Alaska",
+        "WV":"West-Virginia",
+        "GA":"Georgia",
     }
     
     print("Loading database...")
@@ -69,5 +71,5 @@ def gen_city_urls():
     return urls
 
 
-subprocess.call('rm process/cities.json', shell=True)
-subprocess.call('scrapy crawl city -o process/cities.json', shell=True)
+#subprocess.call('rm process/cities.json', shell=True)
+#subprocess.call('scrapy crawl city -o process/cities.json', shell=True)

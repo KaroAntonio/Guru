@@ -3,8 +3,8 @@ html {
 
 body {
     font-family: sans-serif;
-    margin: 3;
-    background: #333;
+    margin: 0;
+    background: #777;
 }
 
 .title {
@@ -42,7 +42,7 @@ body {
 
 #table-wrapper {
     margin: 0px 0px 40px auto;
-    height: 260px;
+    height: 380px;
 }
 
 .table-rows-table-wrapper{
@@ -97,12 +97,12 @@ tr.selected td:last-child { border-right: thin solid black; }
 
 #home-data-title {
     background: #666666;
-    color: #ffffff;
-    margin-top: 65px;
-    font-size: 18px;
+    color: #cbcbcb;
+    margin-top: 3px;
+    font-size: 14px;
     width: 100%;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 #map-title {
@@ -222,7 +222,7 @@ tr.selected td:last-child { border-right: thin solid black; }
 .cssmenu {
   background: #333333;
   border-bottom: 0px solid #DC80F2;
-  font-family: 'Oxygen Mono', Tahoma, Arial, sans-serif;
+  /*font-family: 'Oxygen Mono', Tahoma, Arial, sans-serif;*/
   font-size: 12px;
 }
 .cssmenu > ul {
@@ -383,7 +383,7 @@ tr.selected td:last-child { border-right: thin solid black; }
 .tablemenu {
   background: #666;
   border-bottom: 0px solid #DC80F2;
-  font-family: 'Oxygen Mono', Tahoma, Arial, sans-serif;
+  /*font-family: 'Oxygen Mono', Tahoma, Arial, sans-serif;*/
   font-size: 12px;
 }
 .tablemenu > ul {

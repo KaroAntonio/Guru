@@ -62,7 +62,6 @@ function importJson() {
     console.log("Import")
     d3.json("properties.json", function (data) {
         properties = data;
-        
         initFilters();
         updateTables();
         drawFilters();
@@ -70,7 +69,7 @@ function importJson() {
         
         if (!init) {
             init = true;
-            toggleMap();
+            //toggleMap();
         }
     })
 }
@@ -152,8 +151,9 @@ function drawFilters() {
                 select.id = "select-" + j.toString() + i.toString();
             
             //Add Select to Table List
-            $('#ts_'+String(i)+String(j))[0].appendChild(select);
-            //cell.appendChild(select);
+            var tl = $('#ts_'+String(i)+String(j));
+            tl.empty();
+            tl[0].appendChild(select);
             
             //Blank Cell
             var option = document.createElement("option");
@@ -429,6 +429,7 @@ function clearFavourites() {
 }
     
 function reset() {
+    initFilters();
     if (showFiltered)
         toggleFilters()
     
