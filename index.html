@@ -1,0 +1,573 @@
+<!doctype html>
+<meta charset="utf-8">
+<html>
+<head>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrM5gsBAxzKn_muM0x2QxBiJtLiy_YsG4">
+    </script>
+<link rel="stylesheet" type="text/css" href="style.css">
+<script type="text/javascript">
+  
+var properties_data,
+    properties,
+    row_map,
+    selected,
+    selectedID,
+    content,
+    table,
+    init = false,
+    loaded = false,
+    showFiltered = false;
+    
+var filters = [],
+    attributes = [],
+    filter_cells = [],
+    favourites = [],
+    filtered = [];
+    
+    
+if (is_cookie('favourites'))
+    favourites = JSON.parse(get_cookie('favourites'))
+    
+importJson();
+
+var attr_keys = {
+    'ID':'id',
+    'State':'state',
+    'City':'city',
+    'Bedrooms':'bedrooms',
+    'Sale Status':'sale_status',
+    'Address':'address',
+    'Price':'price',
+    'Rent Zestimate':'rent_zestimate',
+    'Zestimate':'zestimate',
+    'Lot Size':'lot_size',
+    'Bathrooms':'bathrooms',
+    'Square Feet':'sqrft',
+    'Notes':'notes',
+    'Rental Valuation':'rental_valuation',
+}
+
+var titles = [
+    'ID',
+    'State',
+    'City',
+    'Sale Status',
+]
+
+//Import Json
+function importJson() {
+    console.log("Import")
+    d3.json("app/properties.json", function (data) {
+        properties = data;
+        initFilters();
+        updateTables();
+        drawFilters();
+        drawMap();
+        
+        if (!init) {
+            init = true;
+            //toggleMap();
+        }
+    })
+}
+    
+function drawMap() {
+    var mapOptions = {
+      center: { lat: 39.82, lng: -98.57},
+      zoom: 4
+    };
+    var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    var marker, i;
+    for (i = 0; i < filtered.length; i++) {  
+        var p = filtered[i]
+        var latlong = p['latlong']
+        marker = new google.maps.Marker({
+            position: new google.maps.LatLng(latlong[0], latlong[1]),
+            map: map,
+            //icon: 'assets/blue-marker.png'
+        });
+        
+        google.maps.event.addListener(marker, 'click', (function (p) {
+              return function () {
+                    selectRow('table-rows-table', row_map[p.id], p)
+              };
+        })(p));
+    }
+}
+
+function initFilters() {
+    var title_row = $('#table-titles').empty();
+    attributes = []
+    filters = []
+    for (i = 0; i < titles.length; i++) {
+        attributes.push([]);
+        //filters[titles[i]] = [];
+        filters.push([]);
+        //title_row.append($('<td></td>').text(titles[i]));
+        var tm = $('<td><div class="tablemenu"><ul><li class="has-sub" id="tl_'+i+'"><a><span id="tt_'+i+'"></span></a></li></ul></div></td>')
+        title_row.append(tm);
+        $('#tt_'+i)[0].innerHTML = titles[i];
+        $('#tl_'+i).append('<ul><li><a><span id="ts_'+i+'0"></span></a></li><li><a><span id="ts_'+i+'1"></span></a></li></ul>')
+        console.log($('#tl_'+i));
+    }
+}
+    
+function drawFilters() {
+    //Populate Select Menus
+    $("#addColumn").empty();
+    $("#removeColumn").empty();
+    var addCol = document.getElementById("addColumn");
+    var attrs = Object.keys(attr_keys)
+    addCol[addCol.length] = new Option('Add Column', null);
+    for (var i = 0; i < attrs.length; ++i) {
+        if (titles.indexOf(attrs[i]) == -1)
+            addCol[addCol.length] = new Option(attrs[i], attrs[i]);
+    }
+    
+    var removeCol = document.getElementById("removeColumn");
+    removeCol[removeCol.length] = new Option('Remove Column', null);
+    for (var i = 0; i < titles.length; ++i) {
+        removeCol[removeCol.length] = new Option(titles[i], titles[i]);
+    }
+    
+    var title_row = $('#table-titles');
+    var filter_rows = [
+        $('#table-static-header-row-add-filters').empty(),
+        $('#table-static-header-row-remove-filters').empty(),
+    ]
+    
+    //Add in filters
+    for (var i = 0; i < title_row.children().length; i++){
+        
+        for (j = 0; j < filter_rows.length; j++) {
+            
+            filter_rows[j].append($('<td></td>'));
+            
+            var cell = filter_rows[j].children()[i];
+            var select = document.createElement("select");
+                select.id = "select-" + j.toString() + i.toString();
+            
+            //Add Select to Table List
+            var tl = $('#ts_'+String(i)+String(j));
+            tl.empty();
+            tl[0].appendChild(select);
+            
+            //Blank Cell
+            var option = document.createElement("option");
+            option.value = "";
+            if (j == 0)
+                option.text = "Filter " + titles[i];
+            else 
+                option.text = "Clear Filter";
+            select.appendChild(option);
+            
+            //Fill Add / Clear Filter Selects
+            if (j == 0){
+                
+                //Sort Attibutes for the dropdowns
+                if (isNaN(attributes[i][0])) {
+                    //As String
+                    attributes[i].sort();
+                } else {
+                    //As Number
+                    attributes[i].sort(function (a,b) {
+                        return (Number(a) - Number(b));
+                    });
+                }
+                for (k = 0; k < attributes[i].length; k++) {
+                    if (filters[i].indexOf(attributes[i][k]) == -1) {
+                    //if (filters[titles[i]].indexOf(attributes[i][k]) == -1) {
+                        var option = document.createElement("option");
+                        option.value = attributes[i][k];
+                        option.text = attributes[i][k];
+                        select.appendChild(option);
+                    }
+                }
+            } else {
+                filters[i].sort();
+                for (k = 0; k < filters[i].length; k++) {
+                    
+                    var option = document.createElement("option");
+                    option.value = filters[i][k];
+                    option.text = filters[i][k];
+                    select.appendChild(option);
+                }
+            }
+            
+            select.onchange = function (e) {
+                var s = this.options[this.selectedIndex].value;
+                var ii = Number(this.id[this.id.length - 1]);
+                var jj = Number(this.id[this.id.length - 2]);
+                var ie = filters[ii].indexOf(s);
+                if (ie == -1) {
+                    if (jj == 0)
+                        filters[ii].push(s)
+                    else
+                        filters[ii].splice(ie, 1);
+                } else {
+                    if (jj != 0)
+                        filters[ii].splice(ie, 1);
+                }
+                updateTables();
+                drawFilters();
+                drawMap();
+            }
+        }
+    }
+}
+
+function updateTables() {
+    //Filter and Sort properties
+    //SORT
+    sortProperties();
+    //FILTER
+    filterProperties();
+    populateTables();
+}
+
+function populateTables() {
+    $("#table-rows-table tr").remove();
+    if (filtered != null) {
+        row_map = {}
+        filtered.forEach(function(d) {
+            addRow("table-rows-table", d)
+        })
+    }
+}
+
+function sortProperties() {
+    if (properties != null) {
+        properties.sort(function(a, b){
+            return a.rental_valuation - b.rental_valuation
+        });
+    }
+}
+
+function filterProperties() {
+    //FILTER
+    filtered = [];
+    var isFiltered = false;
+    for (i = 0; i < properties.length; i++) {
+        var p = properties[i]
+        if (showFiltered) isFiltered = true;
+        else isFiltered = false;
+        for (j = 0; j < filters.length; j++) {
+            if (showFiltered) {
+                if (filters[j].indexOf(p[attr_keys[titles[j]]]) != -1)
+                    isFiltered = false;
+            } else {
+                if (filters[j].indexOf(p[attr_keys[titles[j]]]) != -1)
+                    isFiltered = true;
+            }
+        }
+        if (isFiltered == false)
+            filtered.push(p)
+    }
+    return filtered
+}
+
+//Add Row
+function addRow(tableID, b, rowCount) {
+    table = document.getElementById(tableID);
+    if (rowCount = null)
+        rowCount = table.rows.length;
+    var row = table.insertRow(rowCount);
+    row_map[b.id] = row;
+    
+    if (favourites.indexOf(b.id) != -1)
+        row.classList.toggle('favourite')
+    
+    if (selectedID == b.id)
+        selectRow(tableID, row, b, false)
+    
+    if (b == null)
+        row.insertCell(0).innerHTML= "Nothing to Receive";
+    else {
+        for (i = 0; i < titles.length; i++) {
+            if (attributes[i].indexOf(b[attr_keys[titles[i]]]) == -1)
+                attributes[i].push(b[attr_keys[titles[i]]]);
+            row.insertCell(i).innerHTML = b[attr_keys[titles[i]]];
+        }
+    }
+    row.classList.toggle('row')
+    
+    //Make row selectable
+    row.onclick = function () { selectRow(tableID, row, b, false) }
+    return;
+}
+
+function selectRow(tableID, row, b, scroll) {
+    if (scroll == null)
+        scroll = true
+    //DESELECT last selected Row
+    if (selected != null) {
+        try {
+            selected.classList.toggle('selected');
+            //selected.style.display = 'table-row'
+            content.parentNode.removeChild(content);
+            selected.classList.toggle('top')
+        } finally {  }
+    }
+    
+    selectedID = b.id
+    selected = row
+    selected.classList.toggle('selected')
+    if (scroll) $(selected)[0].scrollIntoView()
+    //selected.style.display = 'none'
+    
+    var newRow = table.insertRow(row.rowIndex + 1)
+    content = newRow.insertCell(0);
+    content.classList.toggle('content');
+    //newRow.classList.toggle('top')
+    newRow.classList.toggle('bottom')
+    newRow.classList.toggle('selected')
+    selected.classList.toggle('top')
+    if (row.classList.contains('favourite')) 
+        content.classList.toggle('favourite');
+    
+    var toggle = document.createElement('div')
+    toggle.className = "fav-toggle"
+    if (favourites.indexOf(b.id) == -1) {
+        toggle.innerHTML = "&#9734"
+    } else {
+        toggle.innerHTML = "&#9733"
+    }
+    toggle.onclick = function() { toggleFav(toggle, row, content, b) }
+    content.appendChild(toggle)
+    
+    var link = document.createElement('div')
+    link.className = "zillow-link"
+    link.innerHTML = "View Home"
+    link.onclick = function() { window.open(b.zillow_url); }
+    content.appendChild(link)
+    
+    var desc = document.createElement('div')
+    desc.innerHTML = b.address + ", " + b.city + ", " + b.state
+    desc.className = "row-desc"
+    content.appendChild(desc)
+    
+    $( "#home-data" ).empty();
+    for (var property in b) {
+        if (b.hasOwnProperty(property)) {
+            var data = document.createElement('div')
+            data.className = "data"
+            data.innerHTML = property + ": " + b[property]
+            if (b[property] != null)
+                document.getElementById('home-data').appendChild(data)
+        }
+    }
+    
+    content.colSpan = titles.length;
+}
+    
+function toggleFav(toggle, row, content, b) {
+    content.classList.toggle('favourite');
+    row.classList.toggle('favourite');
+    if (favourites.indexOf(b.id) == -1) {
+        favourites.push(b.id)
+        toggle.innerHTML = "&#9733"
+    } else {
+        toggle.innerHTML = "&#9734"
+        favourites.splice(favourites.indexOf(b.id),1)
+    }
+    set_cookie('favourites',JSON.stringify(favourites),365)
+    
+}
+    
+function toggleFilters() {
+    var toggle = document.getElementById("toggle_button");
+    console.log("Toggle")
+    if (showFiltered) {
+        toggle.innerHTML = "Show Filtered";
+        showFiltered = false;
+    } else {
+        toggle.innerHTML = "Hide Filtered";
+        showFiltered = true;
+    }
+    
+    updateTables();
+    drawFilters();
+    drawMap();
+}
+    
+function set_cookie ( cookie_name, cookie_value, lifespan_in_days, valid_domain ) {
+    // http://www.thesitewizard.com/javascripts/cookies.shtml
+    var domain_string = valid_domain ? ("; domain=" + valid_domain) : '' ;
+    document.cookie = cookie_name + "=" + encodeURIComponent( cookie_value ) +
+      "; max-age=" + 60 * 60 * 24 * lifespan_in_days +
+      "; path=/" + domain_string ;
+}
+    
+function is_cookie(cookie_name) {
+    var cookie_string = document.cookie ;
+    if (cookie_string.length != 0) {
+        var cookie_value = cookie_string.match ( cookie_name + '=([^;]*)' );
+        return cookie_value != null;
+    }
+    return false;
+}
+    
+function get_cookie ( cookie_name )
+{
+    // http://www.thesitewizard.com/javascripts/cookies.shtml
+    var cookie_string = document.cookie ;
+    if (cookie_string.length != 0) {
+        var cookie_value = cookie_string.match ( cookie_name + '=([^;]*)' );
+        return decodeURIComponent ( cookie_value[1] ) ;
+    }
+    return '' ;
+}
+    
+function clearFavourites() {
+    favourites = []
+    set_cookie('favourites',JSON.stringify(favourites),365)
+    updateTables()
+}
+    
+function reset() {
+    initFilters();
+    if (showFiltered)
+        toggleFilters()
+    
+    initFilters();
+    updateTables();
+    drawFilters();
+    drawMap();
+}
+    
+function showFavourites() {
+    //Show Only Favourites
+    //Add ID Filter
+    if (titles.indexOf('ID') == -1)
+        titles.push('ID')
+        
+    //Show Filtered
+    if (!showFiltered)
+        toggleFilters()
+        
+    initFilters();
+    for (i = 0; i < favourites.length; i++)
+        filters[titles.indexOf('ID')].push(favourites[i])
+    updateTables();
+    drawFilters();
+    drawMap();
+}
+    
+function addColumn() {
+    //Find Column to Add
+    var m = document.getElementById("addColumn");
+    var new_col = typeof new_col !== 'undefined' ?  new_col : m.options[m.selectedIndex].value;
+    if (new_col == null) return
+    
+    //Add Column to table
+    titles.push(new_col)
+    initFilters();
+    updateTables();
+    drawFilters();
+}
+    
+function removeColumn() {
+    //Find Column to Remove
+    var m = document.getElementById("removeColumn");
+    var col = typeof col !== 'undefined' ?  col : m.options[m.selectedIndex].value;
+    if (col == null) return
+    
+    //Remove Column from table
+    titles.splice(titles.indexOf(col), 1);
+    initFilters();
+    updateTables();
+    drawFilters();
+}
+    
+function toggleMap() {
+    var e = document.getElementById("details");
+    var b = document.getElementById("map_button");
+    var t = document.getElementById("table-wrapper");
+    
+    if (e.style.display == "") {
+        e.style.display = "none";
+        b.innerHTML = "Show Details";
+        t.height = window.innerHeight+'px';
+    } else {
+        e.style.display = "";
+        b.innerHTML = "Hide Details";
+        t.height = '260px';
+    }
+}
+    
+function toggleList() {
+    var m = document.getElementById("table-wrapper");
+    var b = document.getElementById("list_button");
+    
+    if (m.style.display == "") {
+        m.style.display = "none";
+        b.value = "Show List";
+    } else {
+        m.style.display = "";
+        b.value = "Hide List";
+    }
+}   
+    
+</script>
+<title>REI Guru</title>
+</head>
+<body>
+<div class='cssmenu'>
+<ul>
+    <li id='menu-title'><a><span>REI Guru</span></a></li>
+   <li class='has-sub'><a href='#'><span>Options</span></a>
+      <ul>
+          <li class='' onclick="toggleFilters()"><a href='#'><span id="toggle_button">Show Filtered</span></a></li>
+          <li class='' onclick="showFavourites()"><a href='#'><span id="faves_button">Show Favourites</span></a></li>
+          <li class='' onclick="clearFavourites()"><a href='#'><span id="clear_button">Clear Favourites</span></a></li>
+          <li class='' onclick="toggleMap()"><a href='#'><span id="map_button">Hide Details</span></a></li>
+          <li class='' onclick="reset()"><a href='#'><span id="reset_button">Reset</span></a></li>
+          <li class=''><a href='#'><span><select id='addColumn' onchange='addColumn()'></select></span></a></li>
+          <li class=''><a href='#'><span><select id='removeColumn' onchange='removeColumn()'></select></span></a></li>
+      </ul>
+       
+   </li>
+    
+    
+</ul>
+</div>
+<div id="propertiesTable">
+<!--<input type="button" value="Update Properties" id="import_button" onclick="importJson()"/>-->
+<!--
+<input type="button" value="Reset" id="reset_button" onclick="reset()"/>
+<input type="button" value="Show Filtered" id="toggle_button" onclick="toggleFilters()"/>
+<input type="button" value="Clear Favourites" id="clear_button" onclick="clearFavourites()"/>
+<input type="button" value="Show Favourites" id="faves_button" onclick="showFavourites()"/>
+<input type="button" value="Hide Map" id="map_button" onclick="toggleMap()"/>-->
+<!--<input type="button" value="Hide List" id="list_button" onclick="toggleList()"/>-->
+         <div id="table-wrapper">
+            <table class="table-static-header">
+                <thead>
+                    <tr id="table-titles" class="table-static-header-row">
+                    </tr>
+                    <tr id="table-static-header-row-add-filters" class="table-static-header-row">
+                    </tr>
+                    <tr id="table-static-header-row-remove-filters" class="table-static-header-row">
+                    </tr>
+                </thead>
+            </table>
+            <div class="table-rows-table-wrapper">
+                <table id="table-rows-table">
+                    <tbody>	</tbody>
+                </table>
+            </div>
+        </div>
+</div>
+<div id="home-data-title">&nbsp&nbsp&nbsp&nbspHome Details</div>
+<div id="details">
+<div id="home-data"></div>
+<div><div id="map"></div></div>
+    </div>
+</body>
+</html>
+<script>  
+  
+</script>

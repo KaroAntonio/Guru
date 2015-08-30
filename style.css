@@ -1,0 +1,479 @@
+html {
+}
+
+body {
+    font-family: sans-serif;
+    margin: 0;
+    background: #777;
+}
+
+.title {
+    text-align: left;
+    font-size: 20px;
+}
+
+#map {
+    float: left;
+    width: 50%;
+    height: 300px;
+}
+
+.tableTitle {
+    font-size: 25px;
+    display: inline;
+}
+
+#table_info {
+    color: grey;
+    margin-left: 10px;
+    display: inline;
+}
+
+#propertiesTable {
+    display: inline-block;
+    text-align: center;
+    font-size: 14px;
+    height: 50%;
+}
+
+.table-static-header tr td {
+    padding: 0px;
+}
+
+#table-wrapper {
+    margin: 0px 0px 40px auto;
+    height: 380px;
+}
+
+.table-rows-table-wrapper{
+    height: inherit;
+    background: #eeeeee;
+	overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.table-static-header, #table-rows-table{
+    table-layout: fixed;
+    width: 100%; 
+    border-collapse: collapse; 
+    
+}
+
+.table-static-header-row td{ 
+    padding:7px; 
+    text-align: left;
+    background: #666666;
+    color: #ffffff;
+}
+
+#table-titles {
+    background-color: #000;
+}
+
+#table-rows-table td{
+    padding:7px; 
+    width: inherit;
+    text-align: left;
+    
+}
+/* Define the default color for all the table rows */
+#table-rows-table tr{
+	text-align: left;
+    background: #eeeeee;
+}
+/* Define the hover highlight color for the table row */ 
+#table-rows-table tbody tr:hover {
+      background: #dddddd;
+}
+
+.favourite {
+    background-color: #EBC2FF !important;
+}
+
+tr.top td { border-top: thin solid black; }
+tr.bottom td { border-bottom: thin solid black; }
+tr.selected td:first-child { border-left: thin solid black; }
+tr.selected td:last-child { border-right: thin solid black; }
+
+#home-data-title {
+    background: #666666;
+    color: #cbcbcb;
+    margin-top: 3px;
+    font-size: 14px;
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#map-title {
+    background: #666666;
+    float: left;
+    color: #ffffff;
+    font-size: 18px;
+    width: 50%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+
+#home-data {
+    float: left;
+    height: 300px;
+    overflow: scroll;
+    font-size: 14px;
+    width: 50%;
+    background: #eeeeee;
+}
+
+.row-title {
+    float: left;
+}
+
+.row-desc {
+    float: left;
+    margin-left: 10px;
+}
+
+.zillow-link {
+    cursor: pointer;
+    float: left;
+    font-weight: bold;
+    margin-left: 10px;
+    /*background-color: #ffffff !important;*/
+}
+
+.fav-toggle {
+    cursor: pointer;
+    float: left;
+}
+
+#table-rows-table td, .table-static-header td{
+    width: 200px;
+}
+
+.highlight {
+    background: #ffffff;
+}
+
+@import url(http://fonts.googleapis.com/css?family=Oxygen+Mono);
+/* Starter CSS for Menu */
+.cssmenu {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  width: auto;
+}
+.cssmenu ul,
+.cssmenu li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cssmenu ul {
+  position: relative;
+  z-index: 597;
+}
+.cssmenu ul li {
+  float: left;
+  min-height: 1px;
+  vertical-align: middle;
+}
+.cssmenu ul li.hover,
+.cssmenu ul li:hover {
+  position: relative;
+  z-index: 599;
+  cursor: default;
+}
+.cssmenu ul ul {
+  visibility: hidden;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 598;
+  width: 100%;
+}
+.cssmenu ul ul li {
+  float: none;
+}
+.cssmenu ul ul ul {
+  top: 0;
+  left: 190px;
+  width: 190px;
+}
+.cssmenu ul li:hover > ul {
+  visibility: visible;
+}
+.cssmenu ul ul {
+  bottom: 0;
+  left: 0;
+}
+.cssmenu ul ul {
+  margin-top: 0;
+}
+.cssmenu ul ul li {
+  font-weight: normal;
+}
+.cssmenu a {
+  display: block;
+  line-height: 1em;
+  text-decoration: none;
+}
+/* Custom CSS Styles */
+.cssmenu {
+  background: #333333;
+  border-bottom: 0px solid #DC80F2;
+  /*font-family: 'Oxygen Mono', Tahoma, Arial, sans-serif;*/
+  font-size: 12px;
+}
+.cssmenu > ul {
+  *display: inline-block;
+}
+.cssmenu:after,
+.cssmenu ul:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+.cssmenu ul {
+  text-transform: uppercase;
+}
+.cssmenu ul ul {
+  border-top: 4px solid #DC80F2;
+  text-transform: none;
+  min-width: 190px;
+}
+.cssmenu ul ul a {
+  background: #DC80F2;
+  color: #ffffff;
+  border: 1px solid #B066C2;
+  border-top: 0 none;
+  line-height: 150%;
+  padding: 16px 20px;
+  font-size: 12px;
+}
+.cssmenu ul ul ul {
+  border-top: 0 none;
+}
+.cssmenu ul ul li {
+  position: relative;
+}
+.cssmenu ul ul li:first-child > a {
+  border-top: 1px solid #B066C2;
+}
+.cssmenu ul ul li:hover > a {
+  background: #EBC2FF;
+  color: #ffffff;
+}
+.cssmenu ul ul li:last-child > a {
+  -moz-border-radius: 0 0 3px 3px;
+  -webkit-border-radius: 0 0 3px 3px;
+  border-radius: 0 0 3px 3px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  -moz-box-shadow: 0 1px 0 #DC80F2;
+  -webkit-box-shadow: 0 1px 0 #DC80F2;
+  box-shadow: 0 1px 0 #DC80F2;
+}
+.cssmenu ul ul li:last-child:hover > a {
+  -moz-border-radius: 0 0 0 3px;
+  -webkit-border-radius: 0 0 0 3px;
+  border-radius: 0 0 0 3px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+.cssmenu ul ul li.has-sub > a:after {
+  content: '+';
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  margin-top: -8px;
+}
+.cssmenu ul li:hover > a,
+.cssmenu ul li.active > a {
+  background: #DC80F2;
+  color: #ffffff;
+}
+.cssmenu ul li.has-sub > a:after {
+  content: '+';
+  margin-left: 5px;
+}
+.cssmenu ul li.last ul {
+  left: auto;
+  right: 0;
+}
+.cssmenu ul li.last ul ul {
+  left: auto;
+  right: 99.5%;
+}
+.cssmenu a {
+  background: #333333;
+  color: #CBCBCB;
+  padding: 0 20px;
+}
+.cssmenu > ul > li > a {
+  line-height: 48px;
+  font-size: 12px;
+}
+
+.tablemenu {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  width: auto;
+}
+.tablemenu ul,
+.tablemenu li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.tablemenu ul {
+  position: relative;
+  z-index: 497;
+}
+.tablemenu ul li {
+  float: left;
+  min-height: 1px;
+  vertical-align: middle;
+    width: 100%;
+}
+.tablemenu ul li.hover,
+.tablemenu ul li:hover {
+  position: relative;
+  z-index: 499;
+  cursor: default;
+}
+.tablemenu ul ul {
+  visibility: hidden;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 498;
+  width: 100%;
+}
+.tablemenu ul ul li {
+  float: none;
+}
+.tablemenu ul ul ul {
+  top: 0;
+  left: 190px;
+  width: 190px;
+}
+.tablemenu ul li:hover > ul {
+  visibility: visible;
+}
+.tablemenu ul ul {
+  bottom: 0;
+  left: 0;
+}
+.tablemenu ul ul {
+  margin-top: 0;
+}
+.tablemenu ul ul li {
+  font-weight: normal;
+}
+.tablemenu a {
+  display: block;
+  line-height: 1em;
+  text-decoration: none;
+}
+/* Custom CSS Styles */
+.tablemenu {
+  background: #666;
+  border-bottom: 0px solid #DC80F2;
+  /*font-family: 'Oxygen Mono', Tahoma, Arial, sans-serif;*/
+  font-size: 12px;
+}
+.tablemenu > ul {
+  *display: inline-block;
+}
+.tablemenu:after,
+.tablemenu ul:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+.tablemenu ul {
+  text-transform: uppercase;
+}
+.tablemenu ul ul {
+  border-top: 4px solid #DC80F2;
+  text-transform: none;
+  min-width: 190px;
+}
+.tablemenu ul ul a {
+  background: #DC80F2;
+  color: #ffffff;
+  border: 1px solid #B066C2;
+  border-top: 0 none;
+  line-height: 150%;
+  padding: 16px 20px;
+  font-size: 12px;
+}
+.tablemenu ul ul ul {
+  border-top: 0 none;
+}
+.tablemenu ul ul li {
+  position: relative;
+}
+.tablemenu ul ul li:first-child > a {
+  border-top: 1px solid #B066C2;
+}
+.tablemenu ul ul li:hover > a {
+  background: #EBC2FF;
+  color: #ffffff;
+}
+.tablemenu ul ul li:last-child > a {
+  -moz-border-radius: 0 0 3px 3px;
+  -webkit-border-radius: 0 0 3px 3px;
+  border-radius: 0 0 3px 3px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  -moz-box-shadow: 0 1px 0 #DC80F2;
+  -webkit-box-shadow: 0 1px 0 #DC80F2;
+  box-shadow: 0 1px 0 #DC80F2;
+}
+.tablemenu ul ul li:last-child:hover > a {
+  -moz-border-radius: 0 0 0 3px;
+  -webkit-border-radius: 0 0 0 3px;
+  border-radius: 0 0 0 3px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+.tablemenu ul ul li.has-sub > a:after {
+  content: '+';
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  margin-top: -8px;
+}
+.tablemenu ul li:hover > a,
+.tablemenu ul li.active > a {
+  background: #DC80F2;
+  color: #ffffff;
+}
+.tablemenu ul li.has-sub > a:after {
+  content: '+';
+  margin-left: 5px;
+}
+.tablemenu ul li.last ul {
+  left: auto;
+  right: 0;
+}
+.tablemenu ul li.last ul ul {
+  left: auto;
+  right: 99.5%;
+}
+.tablemenu a {
+  background: #666;
+  color: #CBCBCB;
+  padding: 0 20px;
+}
+.tablemenu > ul > li > a {
+  line-height: 48px;
+  font-size: 12px;
+}
