@@ -60,7 +60,7 @@ var titles = [
 //Import Json
 function importJson() {
     console.log("Import")
-    d3.json("properties.json", function (data) {
+    d3.json("app/properties.json", function (data) {
         properties = data;
         initFilters();
         updateTables();
@@ -271,7 +271,6 @@ function filterProperties() {
 
 //Add Row
 function addRow(tableID, b, rowCount) {
-    
     table = document.getElementById(tableID);
     if (rowCount = null)
         rowCount = table.rows.length;
